@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react";
 import PrintR01 from "./print/page";
 
