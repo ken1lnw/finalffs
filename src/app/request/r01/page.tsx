@@ -9,7 +9,7 @@ export default function R01() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [studentID, setStudentID] = useState("");
-  const [educationLevel, setEducationLevel] = useState("ปริญญาตรี");
+  const [educationLevel, setEducationLevel] = useState("ปริญญาตรี ก");
   const [faculty, setFaculty] = useState("วิศวกรรมศาสตร์และเทคโนโลยี");
   const [major, setMajor] = useState("");
   const [intention, setIntention] = useState("");
