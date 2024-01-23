@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from "react";
 import { degrees, PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import fs from 'fs';
