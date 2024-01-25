@@ -3,6 +3,11 @@ import { useState } from "react";
 import { grayscale, degrees, PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import fs from "fs";
 import path from "path";
+import dayjs from "dayjs";
+import "dayjs/locale/th";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
+dayjs.locale("th");
 
 import fontkit from "@pdf-lib/fontkit";
 async function CreatR01(props: {
@@ -25,7 +30,10 @@ async function CreatR01(props: {
 
   const filteredFormData = Object.fromEntries(
     Object.entries(formData).filter(
-      ([fieldName]) => fieldName !== "prefix" && fieldName !== "educationLevel"
+      ([fieldName]) =>
+        fieldName !== "prefix" &&
+        fieldName !== "educationLevel" &&
+        fieldName !== "date"
     )
   );
 
@@ -38,7 +46,39 @@ async function CreatR01(props: {
       color: rgb(0, 0, 1),
     });
   });
-  
+
+  const formattedDate = dayjs(formData["date"]?.value).format("DD MMMM BBBB");
+  let dayPart, monthPart, yearPart;
+
+  if (formattedDate) {
+    [dayPart, monthPart, yearPart] = formattedDate.split(" ");
+    // Draw day part
+    firstPage.drawText(dayPart, {
+      x: 346,
+      y: height - 131,
+      size: 14,
+      font: THSarabunFont,
+      color: rgb(0, 0, 1),
+    });
+
+    // Draw month part
+    firstPage.drawText(monthPart, {
+      x: 400, // Adjust the x-coordinate as needed
+      y: height - 131,
+      size: 14,
+      font: THSarabunFont,
+      color: rgb(0, 0, 1),
+    });
+
+    // Draw era part
+    firstPage.drawText(yearPart, {
+      x: 480, // Adjust the x-coordinate as needed
+      y: height - 131,
+      size: 14,
+      font: THSarabunFont,
+      color: rgb(0, 0, 1),
+    });
+  }
 
   // Check the value of the "prefix" field and draw lines accordingly
   const prefixFieldValue = formData["prefix"]?.value;
@@ -119,7 +159,6 @@ async function CreatR01(props: {
     });
   }
 
-
   const fullNameFieldValue = formData["fullName"]?.value;
 
   if (prefixFieldValue) {
@@ -141,8 +180,6 @@ async function CreatR01(props: {
       color: rgb(0, 0, 1),
     });
   }
-
-
 
   // Additional modifications...
 

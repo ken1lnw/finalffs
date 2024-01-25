@@ -72,36 +72,12 @@ export default function R01() {
         contactNumber: { value: contactNumber, x: 98, y: 424 },
         email: { value: email, x: 91, y: 438 },
       };
-console.log(formDataForPrintR01);
       // Call modifyPdf from PrintR01 with the form data
       CreatR01({ formData: formDataForPrintR01 });
     } else {
       // Handle form validation errors or provide feedback to the user
-      // alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
 
-
-      const formDataForPrintR01 = {
-        date: { value: date, x: 341, y: 132 },
-        subject: { value: subject, x: 80, y: 160 },
-        toWhom: { value: toWhom, x: 80, y: 185 },
-
-        prefix: { value: prefix, x: 0, y: 0 },
-
-        
-        fullName: { value: `${firstName} ${lastName}`, x: 196, y: 214 },
-        studentID: { value: studentID, x: 464, y: 214 },
-
-
-        educationLevel: { value: educationLevel, x: 0, y: 0 },
-
-
-        faculty: { value: faculty, x: 71, y: 268 },
-        major: { value: major, x: 354, y: 268 },
-        intention: { value: intention, x: 145, y: 305 },
-        contactNumber: { value: contactNumber, x: 98, y: 424 },
-        email: { value: email, x: 91, y: 438 },
-      };
-      CreatR01({ formData: formDataForPrintR01 });
 
     }
   };
