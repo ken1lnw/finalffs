@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <>
       <div className="container mx-auto">
-        <h1 className="text-2xl text-center py-5">ยินดีต้อนรับเข้าสู่ "ระบบยื่นเอกสารคำร้องภายในคณะวิศวกรรมศาสตร์และเทคโนโลยี มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน"</h1>
+        <h1 className="text-2xl text-center py-5">ยินดีต้อนรับเข้าสู่ &quot;ระบบยื่นเอกสารคำร้องภายในคณะวิศวกรรมศาสตร์และเทคโนโลยี มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน&quot;</h1>
         
 
         <div className="flex justify-center">
