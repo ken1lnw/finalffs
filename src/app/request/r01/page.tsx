@@ -1,22 +1,111 @@
-"use client"
+"use client";
 
 import { useState } from "react";
-import PrintR01 from "./print/page";
+// import PrintR01 from "./print/page";
+import { CreatR01 } from "./print/creater01";
+
 
 export default function R01() {
   const [date, setDate] = useState("");
   const [subject, setSubject] = useState("");
   const [toWhom, setToWhom] = useState("");
-  const [prefix, setPrefix] = useState("นาย");
+  const [prefix, setPrefix] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [studentID, setStudentID] = useState("");
-  const [educationLevel, setEducationLevel] = useState("ปริญญาตรี ก");
-  const [faculty, setFaculty] = useState("วิศวกรรมศาสตร์และเทคโนโลยี");
+  const [educationLevel, setEducationLevel] = useState("");
+  const [faculty, setFaculty] = useState("");
   const [major, setMajor] = useState("");
   const [intention, setIntention] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [email, setEmail] = useState("");
+
+
+  const [formValid, setFormValid] = useState(false);
+
+
+
+  const validateForm = () => {
+    // Perform validation for each input field
+    const isValid = (
+      date !== "" &&
+      subject !== "" &&
+      toWhom !== "" &&
+      prefix !== "" &&
+      firstName !== "" &&
+      lastName !== "" &&
+      studentID !== "" &&
+      educationLevel !== "" &&
+      faculty !== "" &&
+      major !== "" &&
+      intention !== "" &&
+      contactNumber !== "" &&
+      email !== ""
+    );
+
+    setFormValid(isValid);
+
+    return isValid;
+  };
+
+  const handleSubmit = () => {
+    if (validateForm()) {
+      // If the form is valid, call modifyPdf from PrintR01
+      const formDataForPrintR01 = {
+        date: { value: date, x: 341, y: 132 },
+        subject: { value: subject, x: 80, y: 160 },
+        toWhom: { value: toWhom, x: 80, y: 185 },
+
+        prefix: { value: prefix, x: 0, y: 0 },
+
+        
+        fullName: { value: `${firstName} ${lastName}`, x: 196, y: 214 },
+        studentID: { value: studentID, x: 464, y: 214 },
+
+
+        educationLevel: { value: educationLevel, x: 0, y: 0 },
+
+
+        faculty: { value: faculty, x: 71, y: 268 },
+        major: { value: major, x: 354, y: 268 },
+        intention: { value: intention, x: 145, y: 305 },
+        contactNumber: { value: contactNumber, x: 98, y: 424 },
+        email: { value: email, x: 91, y: 438 },
+      };
+console.log(formDataForPrintR01);
+      // Call modifyPdf from PrintR01 with the form data
+      CreatR01({ formData: formDataForPrintR01 });
+    } else {
+      // Handle form validation errors or provide feedback to the user
+      // alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+
+
+      const formDataForPrintR01 = {
+        date: { value: date, x: 341, y: 132 },
+        subject: { value: subject, x: 80, y: 160 },
+        toWhom: { value: toWhom, x: 80, y: 185 },
+
+        prefix: { value: prefix, x: 0, y: 0 },
+
+        
+        fullName: { value: `${firstName} ${lastName}`, x: 196, y: 214 },
+        studentID: { value: studentID, x: 464, y: 214 },
+
+
+        educationLevel: { value: educationLevel, x: 0, y: 0 },
+
+
+        faculty: { value: faculty, x: 71, y: 268 },
+        major: { value: major, x: 354, y: 268 },
+        intention: { value: intention, x: 145, y: 305 },
+        contactNumber: { value: contactNumber, x: 98, y: 424 },
+        email: { value: email, x: 91, y: 438 },
+      };
+      CreatR01({ formData: formDataForPrintR01 });
+
+    }
+  };
+
 
   return (
     <>
@@ -67,7 +156,7 @@ export default function R01() {
             <label htmlFor="" className=" block mb-2 text-black">
               คำนำหน้า
             </label>
-            <select
+            {/* <select
               id="form"
               className="border border-black rounded-md p-1 w-full h-10"
               value={prefix}
@@ -78,7 +167,15 @@ export default function R01() {
               <option value="นาย">นาย</option>
               <option value="นาง">นาง</option>
               <option value="นางสาว">นางสาว</option>
-            </select>
+            </select> */}
+
+            <input
+              type="text"
+              className="border border-black rounded-md p-1 w-full h-10"
+              placeholder="คำนำหน้า"
+              value={prefix}
+              onChange={(e) => setPrefix(e.target.value)}
+            />
           </div>
 
           <div className="py-2 col-span-12 lg:col-span-4">
@@ -114,7 +211,7 @@ export default function R01() {
             <input
               type="text"
               className="border border-black rounded-md p-1 w-full h-10"
-              placeholder="นามสกุล"
+              placeholder="รหัสนักศึกษา"
               value={studentID}
               onChange={(e) => setStudentID(e.target.value)}
             />
@@ -131,13 +228,13 @@ export default function R01() {
               onChange={(e) => setEducationLevel(e.target.value)}
             >
               <option value="">ระดับการศึกษา</option>
-              <option value="นาย">ปวช.</option>
-              <option value="นาย">ปวส.</option>
-              <option selected value="นาง">
+              <option value="ปวช">ปวช.</option>
+              <option value="ปวส">ปวส.</option>
+              <option  value="ปตรี">
                 ปริญญาตรี
               </option>
-              <option value="นางสาว">ปริญญาโท</option>
-              <option value="นางสาว">ปริญญาเอก</option>
+              <option value="ปโท">ปริญญาโท</option>
+              <option value="ปเอก">ปริญญาเอก</option>
             </select>
           </div>
 
@@ -145,7 +242,7 @@ export default function R01() {
             <label htmlFor="" className=" block mb-2 text-black">
               คณะ
             </label>
-            <select
+            {/* <select
               id=""
               className="border border-black rounded-md p-1 w-full h-10"
               value={faculty}
@@ -154,21 +251,36 @@ export default function R01() {
               <option value="คณะวิศวกรรมศาสตร์และเทคโนโลยี">
                 คณะวิศวกรรมศาสตร์และเทคโนโลยี
               </option>
-            </select>
+            </select> */}
+
+            <input
+              type="text"
+              className="border border-black rounded-md p-1 w-full h-10"
+              placeholder="คณะ"
+              value={faculty}
+              onChange={(e) => setFaculty(e.target.value)}
+            />
           </div>
 
           <div className="py-2 col-span-12 lg:col-span-5">
             <label htmlFor="" className=" block mb-2 text-black">
               สาขา
             </label>
-            <select
+            {/* <select
               id=""
               className="border border-black rounded-md p-1 w-full h-10"
               value={major}
               onChange={(e) => setMajor(e.target.value)}
             >
               <option value="วิศวกรรมคอมพิวเตอร์">วิศวกรรมคอมพิวเตอร์</option>
-            </select>
+            </select> */}
+            <input
+              type="major"
+              className="border border-black rounded-md p-1 w-full h-10"
+              placeholder="สาขา"
+              value={major}
+              onChange={(e) => setMajor(e.target.value)}
+            />
           </div>
 
           <div className="py-2 col-span-12 lg:col-span-12">
@@ -210,12 +322,9 @@ export default function R01() {
             />
           </div>
 
-        
-
-          <PrintR01
+          {/* <PrintR01
             formData={{
               date: { value: date, x: 341, y: 132 },
-
 
               subject: { value: subject, x: 80, y: 160 },
               toWhom: { value: toWhom, x: 80, y: 185 },
@@ -237,7 +346,19 @@ export default function R01() {
 
               // ... other form fields
             }}
-          />
+          /> */}
+
+          <button
+            className="bg-green-500 rounded-lg h-10 my-6 col-span-12 "
+            onClick={handleSubmit}
+          >
+            ยื่นคำร้อง
+          </button>
+
+
+
+
+
         </div>
       </div>
     </>
