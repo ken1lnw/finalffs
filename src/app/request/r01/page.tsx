@@ -74,11 +74,11 @@ export default function R01() {
         email: email,
       };
       // Call modifyPdf from PrintR01 with the form data
-      // CreatR01(formDataForPrintR01);
+      CreatR01(formDataForPrintR01);
       
     } else {
       // Handle form validation errors or provide feedback to the user
-      // alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
 
 
 

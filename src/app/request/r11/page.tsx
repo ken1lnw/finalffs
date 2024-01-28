@@ -99,49 +99,12 @@ export default function R11() {
         professor: professor,
       };
       // Call modifyPdf from PrintR01 with the form data
-      CreatR11({ formData: formDataForPrintR11 });
+      CreatR11(formDataForPrintR11);
       console.log(formDataForPrintR11);
     } else {
       // Handle form validation errors or provide feedback to the user
-      // alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
-      const formDataForPrintR11 = {
-        date: date,
-
-        toWhom: toWhom,
-
-        prefix: prefix,
-
-        fullName: `${firstName} ${lastName}`,
-        studentID: studentID,
-
-        educationLevel:educationLevel,
-
-        faculty:faculty,
-        major:major,
-        
-        contactNumber: contactNumber,
-        email: email,
-
-        semester:semester,
-        academicYear: academicYear,
-
-        studentCourseCode:studentCourseCode,
-        studentCourseTitle: studentCourseTitle,
-        studentCourseCredit: studentCourseCredit,
-
-        structureCourseCode:structureCourseCode,
-        structureCourseTitle: structureCourseTitle,
-        structureSection: structureSection,
-
-
-
-        professor: professor,
-      };
-      // Call modifyPdf from PrintR01 with the form data
-      CreatR11(formDataForPrintR11 );
-      console.log(formDataForPrintR11);
-
-
+      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+   
       
     }
   };
