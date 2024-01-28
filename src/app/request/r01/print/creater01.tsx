@@ -10,10 +10,8 @@ dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
 import fontkit from "@pdf-lib/fontkit";
-async function CreatR01(props: {
-  formData: { [key: string]: { value: any; x: number; y: number } };
-}) {
-  const { formData } = props;
+async function CreatR01(props:any) {
+  // const { formData } = props;
   const url = "/R01.pdf";
   const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
 
@@ -28,26 +26,83 @@ async function CreatR01(props: {
   const firstPage = pages[0];
   const { width, height } = firstPage.getSize();
 
-  const filteredFormData = Object.fromEntries(
-    Object.entries(formData).filter(
-      ([fieldName]) =>
-        fieldName !== "prefix" &&
-        fieldName !== "educationLevel" &&
-        fieldName !== "date"
-    )
-  );
-
-  Object.entries(filteredFormData).forEach(([fieldName, { value, x, y }]) => {
-    firstPage.drawText(value.toString(), {
-      x: x,
-      y: height - y,
-      size: 14,
-      font: THSarabunFont,
-      color: rgb(0, 0, 1),
-    });
+  firstPage.drawText(props.subject, {
+    x: 80,
+    y: height - 160,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
   });
 
-  const formattedDate = dayjs(formData["date"]?.value).format("DD MMMM BBBB");
+  firstPage.drawText(props.toWhom, {
+    x: 80,
+    y: height - 185,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
+  });
+
+
+
+  firstPage.drawText(props.fullName, {
+    x: 196,
+    y: height - 214,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
+  });
+
+  firstPage.drawText(props.studentID, {
+    x: 464,
+    y: height - 214,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
+  });
+
+
+  firstPage.drawText(props.faculty, {
+    x: 71,
+    y: height - 268,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
+  });
+  firstPage.drawText(props.major, {
+    x: 354,
+    y: height - 268,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
+  });
+
+
+
+  firstPage.drawText(props.intention, {
+    x: 145,
+    y: height - 305,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
+  });
+
+
+  firstPage.drawText(props.contactNumber, {
+    x: 98,
+    y: height - 424,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
+  });
+  firstPage.drawText(props.email, {
+    x: 91,
+    y: height - 438,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
+  });
+
+  const formattedDate = dayjs(props.date).format("DD MMMM BBBB");
   let dayPart, monthPart, yearPart;
 
   if (formattedDate) {
@@ -81,7 +136,7 @@ async function CreatR01(props: {
   }
 
   // Check the value of the "prefix" field and draw lines accordingly
-  const prefixFieldValue = formData["prefix"]?.value;
+  const prefixFieldValue = props.prefix;
   if (prefixFieldValue === "นางสาว") {
     firstPage.drawLine({
       start: { x: 122, y: height - 213 },
@@ -115,7 +170,7 @@ async function CreatR01(props: {
     });
   }
 
-  const educationLevelFieldValue = formData["educationLevel"]?.value;
+  const educationLevelFieldValue = props.educationLevel;
 
   if (educationLevelFieldValue === "ปวช") {
     firstPage.drawLine({
@@ -159,7 +214,7 @@ async function CreatR01(props: {
     });
   }
 
-  const fullNameFieldValue = formData["fullName"]?.value;
+  const fullNameFieldValue = props.fullName;
 
   if (prefixFieldValue) {
     const combinedValue = `${prefixFieldValue} ${fullNameFieldValue || ""}`;

@@ -3,6 +3,7 @@
 import { useState } from "react";
 // import PrintR01 from "./print/page";
 import { CreatR01 } from "./print/creater01";
+import ConfirmModal from "./print/confirmmodal";
 
 
 export default function R01() {
@@ -52,31 +53,33 @@ export default function R01() {
     if (validateForm()) {
       // If the form is valid, call modifyPdf from PrintR01
       const formDataForPrintR01 = {
-        date: { value: date, x: 341, y: 132 },
-        subject: { value: subject, x: 80, y: 160 },
-        toWhom: { value: toWhom, x: 80, y: 185 },
+        date: date,
+        subject: subject,
+        toWhom: toWhom,
 
-        prefix: { value: prefix, x: 0, y: 0 },
+        prefix: prefix,
 
         
-        fullName: { value: `${firstName} ${lastName}`, x: 196, y: 214 },
-        studentID: { value: studentID, x: 464, y: 214 },
+        fullName: `${firstName} ${lastName}`,
+        studentID: studentID,
 
 
-        educationLevel: { value: educationLevel, x: 0, y: 0 },
+        educationLevel:educationLevel,
 
 
-        faculty: { value: faculty, x: 71, y: 268 },
-        major: { value: major, x: 354, y: 268 },
-        intention: { value: intention, x: 145, y: 305 },
-        contactNumber: { value: contactNumber, x: 98, y: 424 },
-        email: { value: email, x: 91, y: 438 },
+        faculty: faculty,
+        major: major,
+        intention: intention,
+        contactNumber:contactNumber,
+        email: email,
       };
       // Call modifyPdf from PrintR01 with the form data
-      CreatR01({ formData: formDataForPrintR01 });
+      // CreatR01(formDataForPrintR01);
+      
     } else {
       // Handle form validation errors or provide feedback to the user
-      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+      // alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+
 
 
     }
