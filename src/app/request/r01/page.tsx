@@ -3,8 +3,7 @@
 import { useState } from "react";
 // import PrintR01 from "./print/page";
 import { CreatR01 } from "./print/creater01";
-import ConfirmModal from "./print/confirmmodal";
-
+import ConfirmModal from "../../../components/modal/requestconfirm/page";
 
 export default function R01() {
   const [date, setDate] = useState("");
@@ -21,14 +20,12 @@ export default function R01() {
   const [contactNumber, setContactNumber] = useState("");
   const [email, setEmail] = useState("");
 
-
   const [formValid, setFormValid] = useState(false);
-
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const validateForm = () => {
     // Perform validation for each input field
-    const isValid = (
+    const isValid =
       date !== "" &&
       subject !== "" &&
       toWhom !== "" &&
@@ -41,8 +38,7 @@ export default function R01() {
       major !== "" &&
       intention !== "" &&
       contactNumber !== "" &&
-      email !== ""
-    );
+      email !== "";
 
     setFormValid(isValid);
 
@@ -52,39 +48,65 @@ export default function R01() {
   const handleSubmit = () => {
     if (validateForm()) {
       // If the form is valid, call modifyPdf from PrintR01
-      const formDataForPrintR01 = {
-        date: date,
+      // const formDataForPrintR01 = {
+      //   date: date,
+      //   subject: subject,
+      //   toWhom: toWhom,
+
+      //   prefix: prefix,
+
+      //   fullName: `${firstName} ${lastName}`,
+      //   studentID: studentID,
+
+      //   educationLevel: educationLevel,
+
+      //   faculty: faculty,
+      //   major: major,
+      //   intention: intention,
+      //   contactNumber: contactNumber,
+      //   email: email,
+      // };
+      // Call modifyPdf from PrintR01 with the form data
+      // CreatR01(formDataForPrintR01);
+      setIsModalOpen(true);
+    } else {
+      // Handle form validation errors or provide feedback to the user
+      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+    }
+  };
+
+  const handleConfirm = () => {
+    // If the user confirms, call modifyPdf from PrintR01
+    const formDataForPrintR01 = {
+      date: date,
         subject: subject,
         toWhom: toWhom,
 
         prefix: prefix,
 
-        
         fullName: `${firstName} ${lastName}`,
         studentID: studentID,
 
-
-        educationLevel:educationLevel,
-
+        educationLevel: educationLevel,
 
         faculty: faculty,
         major: major,
         intention: intention,
-        contactNumber:contactNumber,
+        contactNumber: contactNumber,
         email: email,
-      };
-      // Call modifyPdf from PrintR01 with the form data
-      CreatR01(formDataForPrintR01);
-      
-    } else {
-      // Handle form validation errors or provide feedback to the user
-      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+    };
 
+    // Call modifyPdf from PrintR01 with the form data
+    CreatR01(formDataForPrintR01);
 
-
-    }
+    // Close the confirmation modal
+    setIsModalOpen(false);
   };
 
+  const handleCancel = () => {
+    // If the user cancels, close the confirmation modal
+    setIsModalOpen(false);
+  };
 
   return (
     <>
@@ -209,9 +231,7 @@ export default function R01() {
               <option value="">ระดับการศึกษา</option>
               <option value="ปวช">ปวช.</option>
               <option value="ปวส">ปวส.</option>
-              <option  value="ปตรี">
-                ปริญญาตรี
-              </option>
+              <option value="ปตรี">ปริญญาตรี</option>
               <option value="ปโท">ปริญญาโท</option>
               <option value="ปเอก">ปริญญาเอก</option>
             </select>
@@ -334,10 +354,11 @@ export default function R01() {
             ยื่นคำร้อง
           </button>
 
-
-
-
-
+          <ConfirmModal
+            isOpen={isModalOpen}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+          />
         </div>
       </div>
     </>

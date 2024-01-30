@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CreatR11 } from "./print/creater11";
+import ConfirmModal from "@/components/modal/requestconfirm/page";
 
 export default function R11() {
   const [date, setDate] = useState("");
@@ -30,6 +31,7 @@ export default function R11() {
   const [professor, setProfessor] = useState("");
 
   const [formValid, setFormValid] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const validateForm = () => {
     // Perform validation for each input field
@@ -47,11 +49,9 @@ export default function R11() {
       email !== "" &&
       semester !== "" &&
       academicYear !== "" &&
-
       studentCourseCode !== "" &&
       studentCourseTitle !== "" &&
       studentCourseCredit !== "" &&
-
       structureCourseCode !== "" &&
       structureCourseTitle !== "" &&
       structureSection !== "" &&
@@ -65,48 +65,92 @@ export default function R11() {
   const handleSubmit = () => {
     if (validateForm()) {
       // If the form is valid, call modifyPdf from PrintR01
-      const formDataForPrintR11 = {
-        date: date,
+      // const formDataForPrintR11 = {
+      //   date: date,
 
-        toWhom: toWhom,
+      //   toWhom: toWhom,
 
-        prefix: prefix,
+      //   prefix: prefix,
 
-        fullName: `${firstName} ${lastName}`,
-        studentID: studentID,
+      //   fullName: `${firstName} ${lastName}`,
+      //   studentID: studentID,
 
-        educationLevel:educationLevel,
+      //   educationLevel: educationLevel,
 
-        faculty:faculty,
-        major:major,
-        
-        contactNumber: contactNumber,
-        email: email,
+      //   faculty: faculty,
+      //   major: major,
 
-        semester:semester,
-        academicYear: academicYear,
+      //   contactNumber: contactNumber,
+      //   email: email,
 
-        studentCourseCode:studentCourseCode,
-        studentCourseTitle: studentCourseTitle,
-        studentCourseCredit: studentCourseCredit,
+      //   semester: semester,
+      //   academicYear: academicYear,
 
-        structureCourseCode:structureCourseCode,
-        structureCourseTitle: structureCourseTitle,
-        structureSection: structureSection,
+      //   studentCourseCode: studentCourseCode,
+      //   studentCourseTitle: studentCourseTitle,
+      //   studentCourseCredit: studentCourseCredit,
 
+      //   structureCourseCode: structureCourseCode,
+      //   structureCourseTitle: structureCourseTitle,
+      //   structureSection: structureSection,
 
-
-        professor: professor,
-      };
+      //   professor: professor,
+      // };
       // Call modifyPdf from PrintR01 with the form data
-      CreatR11(formDataForPrintR11);
-      console.log(formDataForPrintR11);
+      setIsModalOpen(true);
+
+      // CreatR11(formDataForPrintR11);
+      // console.log(formDataForPrintR11);
     } else {
       // Handle form validation errors or provide feedback to the user
       alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
-   
-      
     }
+  };
+
+  const handleConfirm = () => {
+    // If the user confirms, call modifyPdf from PrintR01
+    const formDataForPrintR11 = {
+      date: date,
+
+      toWhom: toWhom,
+
+      prefix: prefix,
+
+      fullName: `${firstName} ${lastName}`,
+      studentID: studentID,
+
+      educationLevel: educationLevel,
+
+      faculty: faculty,
+      major: major,
+
+      contactNumber: contactNumber,
+      email: email,
+
+      semester: semester,
+      academicYear: academicYear,
+
+      studentCourseCode: studentCourseCode,
+      studentCourseTitle: studentCourseTitle,
+      studentCourseCredit: studentCourseCredit,
+
+      structureCourseCode: structureCourseCode,
+      structureCourseTitle: structureCourseTitle,
+      structureSection: structureSection,
+
+      professor: professor,
+    };
+
+    // Call modifyPdf from PrintR01 with the form data
+    CreatR11(formDataForPrintR11);
+
+    // Close the confirmation modal
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    // If the user cancels, close the confirmation modal
+    setIsModalOpen(false);
   };
 
   return (
@@ -381,8 +425,6 @@ export default function R11() {
             />
           </div>
 
- 
-
           <div className="py-2 col-span-12 lg:col-span-2">
             <label htmlFor="" className=" block mb-2 text-black">
               กลุ่มเรียน
@@ -415,6 +457,16 @@ export default function R11() {
           >
             ยื่นคำร้อง
           </button>
+
+
+
+          <ConfirmModal
+            isOpen={isModalOpen}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+          />
+
+          
         </div>
       </div>
     </>
