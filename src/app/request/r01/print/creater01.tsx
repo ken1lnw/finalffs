@@ -239,7 +239,25 @@ async function CreatR01(props:any) {
   // Additional modifications...
 
   const pdfBytes = await pdfDoc.save();
+  // const formData = new FormData();
   const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+  // formData.append("file", pdfBlob, "output.pdf");
+
+
+  // // Make a POST request to your server to upload the file using fetch
+  // try {
+  //   await fetch("/api/uploadpdf", {
+  //     method: "POST",
+  //     body: formData,
+  //   });
+
+  //   console.log("File uploaded successfully");
+  // } catch (error) {
+  //   console.error("Error uploading file:", error);
+  // }
+
+
+
   const pdfBlobUrl = URL.createObjectURL(pdfBlob);
 
   window.open(pdfBlobUrl, "_blank");
