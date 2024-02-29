@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId      String   @id @map("_id")
+  prefix      String?
+  name        String?
+  lname       String?
+  affiliation String? 
+  campus      String? 
+  faculty     String?
+  programs    String?
+  major       String?
+  room        String[]
+  role        String?
+  signPath    String?
+  admin       Boolean  @default(false)
+}
+
+model Documents {
+  documentsId String @id @default(auto()) @map("_id") @db.ObjectId
+  docType String?
+  date           String?
+  major  String?
+  status         String?
+
+  studentId String?
+  studentPrefix String?
+  studentName String?
+  studentLastName String?
+
+  advisorId String?
+  advisorPrefix String?
+  advisorName String?
+  advisorLastName String?
+  advisorComments String?
+  advisorDate String?
+
+  headDepartmentId String?
+  headDepartmentPrefix String?
+  headDepartmentName String?
+  headDepartmentLastName String?
+  headDepartmentComment String?
+  headDepartmentDate String?
+  
+  officerId String?
+  officerPrefix String?
+  officerName String?
+  officerLastName String?
+  officerComments String?
+  officerDate String?
+  
+}
+
+model Room {
+  roomId  String   @id @map("_id")
+  advisorId String?
+  advisorPrefix String?
+  advisorName String?
+  advisorLastName String?
+  student String[] // เก็บ User Role Student //เก็บเป็น id
+}
+
+model Major {
+  majorId        String   @id @map("_id")
+  headdepartmentId String?
+  headdepartmentPrefix String?
+  headdepartmentName String?
+  headdepartmentLastName String?
+  users String[] // เก็บ User ทุก Role
+}
+
+

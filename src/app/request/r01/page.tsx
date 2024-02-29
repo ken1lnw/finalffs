@@ -1,9 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // import PrintR01 from "./print/page";
 import { CreatR01 } from "./print/creater01";
 import ConfirmModal from "../../../components/modal/requestconfirm/page";
+import { set } from "date-fns";
+
+interface UserData {
+  userId: string;
+  prefix: string;
+  name: string;
+  lname: string;
+  faculty: string;
+  major: string;
+
+  // และคุณสามารถเพิ่ม properties อื่นๆ ตามต้องการได้
+}
 
 export default function R01() {
   const [date, setDate] = useState("");
@@ -22,6 +34,52 @@ export default function R01() {
 
   const [formValid, setFormValid] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [data, setData] = useState<UserData | null>({
+    userId: "",
+    prefix: "",
+    name: "",
+    lname: "",
+    faculty: "",
+    major: "",
+  });
+  const [isLoading, setLoading] = useState(true);
+
+  // const [createdDocs, setCreatedDocs] = useState<any>("");
+
+  useEffect(() => {
+    fetch("/api/dbuser/621721100411")
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data.users);
+        if (data.users) {
+          setStudentID(data?.users?.userId || "");
+          setPrefix(data?.users?.prefix || "");
+          setFirstName(data?.users?.name || "");
+          setLastName(data?.users?.lname || "");
+          setFaculty(data?.users?.faculty || "");
+          setMajor(data?.users?.major || "");
+        } else {
+          console.log("error set data");
+        }
+
+        setLoading(false);
+        console.log(data.users);
+      });
+  }, []);
+
+  const createDocDB = async () => {
+    const response = await fetch("/api/dbdocs", {
+      method: "POST",
+      body: JSON.stringify({}),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const createdData = await response.json();
+    // setCreatedDocs(createdData.newDoc.documentsId);
+    // console.log(createdData.newDoc.documentsId)
+  };
 
   const validateForm = () => {
     // Perform validation for each input field
@@ -75,29 +133,55 @@ export default function R01() {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     // If the user confirms, call modifyPdf from PrintR01
+
+    const response = await fetch("/api/dbdocs", {
+      method: "POST",
+      body: JSON.stringify({
+        date: date,
+        docType: "R.01 คำร้องทั่วไป",
+        status: "นักศึกษายื่นคำร้อง",
+        studentId: studentID,
+        studentPrefix: prefix,
+        studentName: firstName,
+        studentLastName: lastName,
+        major : major
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    // ดึงข้อมูลที่สร้างเอกสารมาจาก response
+    const createdData = await response.json();
+
+    // เก็บค่าของเอกสารที่สร้างขึ้นมาใหม่ลงในตัวแปร createdDocs
+    const createdDocs = createdData.newDoc.documentsId;
+
     const formDataForPrintR01 = {
+      createdDocs: createdDocs,
       date: date,
-        subject: subject,
-        toWhom: toWhom,
+      subject: subject,
+      toWhom: toWhom,
 
-        prefix: prefix,
+      prefix: prefix,
 
-        fullName: `${firstName} ${lastName}`,
-        studentID: studentID,
+      fullName: `${firstName} ${lastName}`,
+      studentID: studentID,
 
-        educationLevel: educationLevel,
+      educationLevel: educationLevel,
 
-        faculty: faculty,
-        major: major,
-        intention: intention,
-        contactNumber: contactNumber,
-        email: email,
+      faculty: faculty,
+      major: major,
+      intention: intention,
+      contactNumber: contactNumber,
+      email: email,
     };
 
     // Call modifyPdf from PrintR01 with the form data
     CreatR01(formDataForPrintR01);
+    // console.log(createdDocs);
 
     // Close the confirmation modal
     setIsModalOpen(false);

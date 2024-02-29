@@ -3,10 +3,66 @@ import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
-export default function DeleteButton() {
+export default function DeleteButton(props:any) {
   const [open, setOpen] = useState(false);
 
   const cancelButtonRef = useRef(null);
+
+  const handlePrint = async () => {
+    // เปิด URL โดยใช้ documentsId
+    // window.open(`/docsign/${documentsId}.pdf`, "_blank");
+
+
+    try {
+      const deletefile = await fetch(`/api/deletepdf/${props.documentsId}`, {
+          method: "DELETE",
+          body: JSON.stringify({}),
+          headers: {
+              "Content-Type": "application/json",
+          },
+      });
+
+      if (deletefile.ok) {
+          // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
+          console.log("File Deleted successfully")
+      } else {
+          // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
+          console.error("File Delete request failed");
+      }
+      
+      setOpen(false);
+  } catch (error) {
+      // ทำอะไรสักอย่างเมื่อเกิดข้อผิดพลาดในการ fetch
+      console.error("Error occurred while deleting file", error);
+  }
+
+
+
+    try {
+      const deletefromdb = await fetch(`/api/dbdocs/${props.documentsId}`, {
+          method: "DELETE",
+          body: JSON.stringify({}),
+          headers: {
+              "Content-Type": "application/json",
+          },
+      });
+
+      if (deletefromdb.ok) {
+          // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
+          console.log("DB Docs Deleted successfully");
+      } else {
+          // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
+          console.error("DB Docs Delete request failed");
+      }
+      props.refreshData();
+      setOpen(false);
+  } catch (error) {
+      // ทำอะไรสักอย่างเมื่อเกิดข้อผิดพลาดในการ fetch
+      console.error("Error occurred while deleting DB Docs", error);
+  }
+  
+
+  };
 
   return (
     <>
@@ -70,13 +126,11 @@ export default function DeleteButton() {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          Deactivate account
+                          คุณแน่ใจหรือไม่
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">
-                            Are you sure you want to deactivate your account?
-                            All of your data will be permanently removed. This
-                            action cannot be undone.
+                            กรุณาตรวจสอบให้แน่ใจว่าต้องการลบคำร้อง เนื่องจากจะไม่สามารถกู้คืนร้องที่ลบไปแล้วได้
                           </p>
                         </div>
                       </div>
@@ -86,9 +140,9 @@ export default function DeleteButton() {
                     <button
                       type="button"
                       className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                      onClick={() => setOpen(false)}
+                      onClick={handlePrint}
                     >
-                      Deactivate
+                      ลบ
                     </button>
                     <button
                       type="button"
@@ -96,7 +150,7 @@ export default function DeleteButton() {
                       onClick={() => setOpen(false)}
                       ref={cancelButtonRef}
                     >
-                      Cancel
+                      ยกเลิก
                     </button>
                   </div>
                 </Dialog.Panel>

@@ -12,6 +12,7 @@ dayjs.locale("th");
 import fontkit from "@pdf-lib/fontkit";
 async function CreatR01(props:any) {
   // const { formData } = props;
+  console.log(props)
   const url = "/R01.pdf";
   const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
 
@@ -239,22 +240,21 @@ async function CreatR01(props:any) {
   // Additional modifications...
 
   const pdfBytes = await pdfDoc.save();
-  // const formData = new FormData();
+  const formData = new FormData();
   const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
-  // formData.append("file", pdfBlob, "output.pdf");
+  formData.append("file", pdfBlob, `${props.createdDocs}.pdf`);
 
+  // Make a POST request to your server to upload the file using fetch
+  try {
+    await fetch("/api/uploadpdf", {
+      method: "POST",
+      body: formData,
+    });
 
-  // // Make a POST request to your server to upload the file using fetch
-  // try {
-  //   await fetch("/api/uploadpdf", {
-  //     method: "POST",
-  //     body: formData,
-  //   });
-
-  //   console.log("File uploaded successfully");
-  // } catch (error) {
-  //   console.error("Error uploading file:", error);
-  // }
+    console.log("File uploaded successfully");
+  } catch (error) {
+    console.error("Error uploading file:", error);
+  }
 
 
 
