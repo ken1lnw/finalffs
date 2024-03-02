@@ -10,6 +10,8 @@ const navigation = [
   { name: "หน้าแรก", href: "/", current: false },
   { name: "ยื่นคำร้อง", href: "/request", current: false },
   { name: "ประวัติ", href: "/history", current: false },
+  { name: "จัดการคำร้อง", href: "/managedocs", current: false },
+  { name: "จัดการผู้ใช้งาน", href: "/manageusers", current: false },
 ];
 
 function classNames(...classes: any) {
