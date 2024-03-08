@@ -12,7 +12,7 @@ export default function EditButton() {
     <>
       <button
         type="button"
-        className=" justify-center rounded-md bg-yellow-500 px-2 py-2  hover:bg-yellow-400"
+        className=" justify-center rounded-md bg-yellow-500 px-2 py-2 mr-1 hover:bg-yellow-400"
         onClick={() => setOpen(true)} // Set open state to true when button is clicked
       >
         <svg

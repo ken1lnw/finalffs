@@ -17,6 +17,7 @@
         "name": "next"
       }
     ],
+    "downlevelIteration": true, //เพิ่มเข้ามาเพราะ api add user room
     "paths": {
       "@/*": ["./src/*"],
       "@/components": ["./src/components/*"]

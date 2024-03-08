@@ -54,32 +54,21 @@ export default function History() {
 
   const filteredData =
     data?.users?.filter((item: any) => {
-      const userIdMatch = item.userId
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const nameMatch = item.name
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const lnameMatch = item.lname
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const majorMatch = item.major
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const roleMatch = item.role
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const adminMatch = item.admin
-        .toString()
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      return (
-        userIdMatch ||
-        nameMatch ||
-        lnameMatch ||
-        majorMatch ||
-        roleMatch ||
-        adminMatch
+      const keys = [
+        "userId",
+        "prefix",
+        "name",
+        "lname",
+        "faculty",
+        "programs",
+        "major",
+        "room",
+        "role",
+        "admin",
+
+      ];
+      return keys.some((key) =>
+        item[key]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
       );
     }) ?? [];
 

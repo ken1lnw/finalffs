@@ -2,12 +2,13 @@
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import StudentTable from "./studenttable/page";
 
 export default function DetailButton(props: any) {
   const [open, setOpen] = useState(false);
 
   const cancelButtonRef = useRef(null);
-  const userData = props.user;
+  const roomData = props.room;
 
   return (
     <>
@@ -51,7 +52,7 @@ export default function DetailButton(props: any) {
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div className="md:flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -61,7 +62,7 @@ export default function DetailButton(props: any) {
                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
-                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl">
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div className="">
                       {/* <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -75,72 +76,46 @@ export default function DetailButton(props: any) {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          ข้อมูล {userData?.prefix} {userData?.name}{" "}
-                          {userData?.lname}
+                          ข้อมูลห้อง {roomData?.roomId}
                         </Dialog.Title>
                         <div className="mt-2">
                           <div className="grid grid-cols-12 gap-2">
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              รหัสนักศึกษา :
+                            <p className="py-2 col-span-12 md:col-span-4 md:text-right">
+                              รหัสอาจารย์ที่ปรึกษา :
                             </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              {userData?.userId}
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              คำนำหน้า :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              {userData?.prefix}
+                            <p className="py-2 col-span-12 md:col-span-8">
+                              {roomData?.advisorId}
                             </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ชื่อ :
+                            <p className="py-2 col-span-12 md:col-span-4 md:text-right">
+                              อาจารย์ที่ปรึกษา :
                             </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              {userData?.name}
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              นามสกุล :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              {userData?.lname}
+                            <p className="py-2 col-span-12 md:col-span-8">
+                              {roomData?.advisorPrefix} {roomData?.advisorName} {roomData?.advisorLastName}
                             </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
+
+                            <p className="py-2 col-span-12 md:col-span-4 md:text-right">
                               สาขาวิชา :
                             </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              {userData?.major}
+                            <p className="py-2 col-span-12 md:col-span-8">
+                              {roomData?.roomMajor}
                             </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ระดับผู้ใช้ :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              {userData?.role}
-                            </p>
+                  
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ระดับแอดมิน :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              {userData?.admin.toString()}
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ห้องเรียน :
+                            <p className="py-2 col-span-12 md:col-span-4 md:text-right">
+                              นักศึกษาในห้อง :
                             </p>
                      
                      
-                              {Array.isArray(userData?.room) &&
-                              userData?.room.length > 0 ? (
-                                <p className="py-2 col-span-12 md:col-span-9">
-                                  {userData?.room}
+                              {Array.isArray(roomData?.student) &&
+                              roomData?.student.length > 0 ? (
+                                <p className="py-2 col-span-12 md:col-span-8">
+                                  {roomData?.student.length}
                                 </p>
                               ) : (
-                                <p className="py-2 col-span-12 md:col-span-9">
+                                <p className="py-2 col-span-12 md:col-span-8">
                                   ไม่มี
                                 </p>
                               )}
@@ -151,7 +126,10 @@ export default function DetailButton(props: any) {
                         </div>
                       </div>
                     </div>
+                    <StudentTable students={roomData?.student} roomId={roomData?.roomId}/>
                   </div>
+
+                  
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     {/* <button
                       type="button"

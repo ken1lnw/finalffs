@@ -63,6 +63,7 @@ model Documents {
 
 model Room {
   roomId  String   @id @map("_id")
+  roomMajor String?
   advisorId String?
   advisorPrefix String?
   advisorName String?

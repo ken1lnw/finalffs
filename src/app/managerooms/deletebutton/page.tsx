@@ -9,12 +9,9 @@ export default function DeleteButton(props:any) {
   const cancelButtonRef = useRef(null);
 
   const handlePrint = async () => {
-    // เปิด URL โดยใช้ documentsId
-    // window.open(`/docsign/${documentsId}.pdf`, "_blank");
-
 
     try {
-      const deletefile = await fetch(`/api/deletepdf/${props.documentsId}`, {
+      const deleteuser = await fetch(`/api/dbroom/${props.roomId}`, {
           method: "DELETE",
           body: JSON.stringify({}),
           headers: {
@@ -22,44 +19,23 @@ export default function DeleteButton(props:any) {
           },
       });
 
-      if (deletefile.ok) {
+      if (deleteuser.ok) {
           // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
-          console.log("File Deleted successfully")
+          console.log("Room Deleted successfully")
       } else {
           // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
-          console.error("File Delete request failed");
-      }
-      
-      setOpen(false);
-  } catch (error) {
-      // ทำอะไรสักอย่างเมื่อเกิดข้อผิดพลาดในการ fetch
-      console.error("Error occurred while deleting file", error);
-  }
-
-
-
-    try {
-      const deletefromdb = await fetch(`/api/dbdocs/${props.documentsId}`, {
-          method: "DELETE",
-          body: JSON.stringify({}),
-          headers: {
-              "Content-Type": "application/json",
-          },
-      });
-
-      if (deletefromdb.ok) {
-          // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
-          console.log("DB Docs Deleted successfully");
-      } else {
-          // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
-          console.error("DB Docs Delete request failed");
+          console.error("Room Delete request failed");
       }
       props.refreshData();
       setOpen(false);
   } catch (error) {
       // ทำอะไรสักอย่างเมื่อเกิดข้อผิดพลาดในการ fetch
-      console.error("Error occurred while deleting DB Docs", error);
+      console.error("Error occurred while deleting Room", error);
   }
+
+
+
+ 
   
 
   };
@@ -68,7 +44,7 @@ export default function DeleteButton(props:any) {
     <>
       <button
         type="button"
-        className=" justify-center rounded-md bg-red-500 px-2 py-2 mr-1 hover:bg-red-400"
+        className=" justify-center rounded-md bg-red-500 px-2 py-2 mr-1  hover:bg-red-400"
         onClick={() => setOpen(true)} // Set open state to true when button is clicked
       >
         <svg
@@ -130,7 +106,7 @@ export default function DeleteButton(props:any) {
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">
-                            กรุณาตรวจสอบให้แน่ใจว่าต้องการลบคำร้อง เนื่องจากจะไม่สามารถกู้คืนคำร้องที่ลบไปแล้วได้
+                            กรุณาตรวจสอบให้แน่ใจว่าต้องการลบห้อง เนื่องจากจะไม่สามารถกู้คืนห้องที่ลบไปแล้วได้
                           </p>
                         </div>
                       </div>

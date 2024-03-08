@@ -10,47 +10,36 @@ export default function EditButton(props: any) {
   // const [faculty, setFaculty] = useState("");
 
   const cancelButtonRef = useRef(null);
-  const userData = props.user;
-  const [studentID, setStudentID] = useState(userData?.userId);
-  const [prefix, setPrefix] = useState(userData?.prefix);
-  const [firstName, setFirstName] = useState(userData?.name);
-  const [lastName, setLastName] = useState(userData?.lname);
-  const [faculty, setFaculty] = useState(userData?.faculty);
-  const [major, setMajor] = useState(userData?.major);
-  const [role, setRole] = useState(userData?.role);
-  const [admin, setAdmin] = useState(userData?.admin.toString());
+  const roomData = props.room;
+  const [roomId, setRoomId] = useState(roomData?.roomId);
+  const [roomMajor, setRoomMajor] = useState(roomData?.roomMajor);
+  const [teacherId, setTeacherId] = useState(roomData?.advisorId);
+  const [prefix, setPrefix] = useState(roomData?.advisorPrefix);
+  const [firstName, setFirstName] = useState(roomData?.advisorName);
+  const [lastName, setLastName] = useState(roomData?.advisorLastName);
+
 
   const resetStates = () => {
-    setStudentID(userData?.userId);
-    setPrefix(userData?.prefix);
-    setFirstName(userData?.name);
-    setLastName(userData?.lname);
-    setFaculty(userData?.faculty);
-    setMajor(userData?.major);
-    setRole(userData?.role);
-    setAdmin(userData?.admin.toString());
+    setRoomId(roomData?.roomId);
+    setRoomMajor(roomData?.roomMajor);
+    setTeacherId(roomData?.advisorId);
+    setPrefix(roomData?.advisorPrefix);
+    setFirstName(roomData?.advisorName);
+    setLastName(roomData?.advisorLastName);
   };
 
   const handleConfirm = async () => {
     try {
-      let isAdmin; // ประกาศตัวแปร isAdmin ในขอบเขตที่กว้างกว่า
 
-      if (admin == "true") {
-        isAdmin = true;
-      } else {
-        isAdmin = false;
-      }
-
-      const response = await fetch(`/api/dbuser/${userData.userId}`, {
+      const response = await fetch(`/api/dbroom/${roomData.roomId}`, {
         method: "PUT",
         body: JSON.stringify({
-          // userId: studentID,
-          prefix: prefix,
-          name: firstName,
-          lname: lastName,
-          major: major,
-          role: role,
-          admin: isAdmin,
+          
+          roomMajor: roomMajor,
+          advisorId: teacherId,
+          advisorPrefix: prefix,
+          advisorName: firstName,
+          advisorLastName: lastName,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -59,11 +48,11 @@ export default function EditButton(props: any) {
 
       // ดึงข้อมูลที่สร้างเอกสารมาจาก response
       const EditedData = await response.json();
-      console.log("แก้ไขข้อมูลสำเร็จ");
+      console.log("แก้ไขข้อมูลห้องสำเร็จ");
       console.log(EditedData);
       props.refreshData();
     } catch (error) {
-      console.log("Error while Editing User");
+      console.log("Error while Editing Room");
     }
   };
 
@@ -109,7 +98,7 @@ export default function EditButton(props: any) {
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div className="md:flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -133,29 +122,42 @@ export default function EditButton(props: any) {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          ข้อมูล {userData?.prefix} {userData?.name}{" "}
-                          {userData?.lname}
+                          แก้ไขข้อมูล {roomData?.roomId} 
                         </Dialog.Title>
                         <div className="mt-2">
                           <div className="grid grid-cols-12 gap-2 items-center">
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              รหัสนักศึกษา :
+
+
+                          <p className="py-2 col-span-12 md:col-span-4 md:text-right">
+                              สาขาวิชา :
                             </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              {/* <input
+                            <p className="py-2 col-span-12 md:col-span-8">
+                              <input
                                 type="text"
                                 className="border border-black rounded-md p-1 w-full"
-                                placeholder="รหัสนักศึกษา"
-                                value={studentID || "ไม่พบข้อมูล"}
-                                onChange={(e) => setStudentID(e.target.value)}
-                              /> */}
-                              {studentID}
+                                placeholder="สาขาวิชา"
+                                value={roomMajor}
+                                onChange={(e) => setRoomMajor(e.target.value)}
+                              />
+                            </p>
+                          
+                            <p className="py-2 col-span-12 md:col-span-4 md:text-right">
+                            รหัสอาจารย์ที่ปรึกษา :
+                            </p>
+                            <p className="py-2 col-span-12 md:col-span-8">
+                              <input
+                                type="text"
+                                className="border border-black rounded-md p-1 w-full"
+                                placeholder="รหัสอาจารย์ที่ปรึกษา"
+                                value={teacherId}
+                                onChange={(e) => setTeacherId(e.target.value)}
+                              />
                             </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
+                            <p className="py-2 col-span-12 md:col-span-4 md:text-right">
                               คำนำหน้า :
                             </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
+                            <p className="py-2 col-span-12 md:col-span-8">
                               <input
                                 type="text"
                                 className="border border-black rounded-md p-1 w-full"
@@ -165,10 +167,10 @@ export default function EditButton(props: any) {
                               />
                             </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
+                            <p className="py-2 col-span-12 md:col-span-4 md:text-right">
                               ชื่อ :
                             </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
+                            <p className="py-2 col-span-12 md:col-span-8">
                               <input
                                 type="text"
                                 className="border border-black rounded-md p-1 w-full"
@@ -178,10 +180,10 @@ export default function EditButton(props: any) {
                               />
                             </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
+                            <p className="py-2 col-span-12 md:col-span-4 md:text-right">
                               นามสกุล :
                             </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
+                            <p className="py-2 col-span-12 md:col-span-8">
                               <input
                                 type="text"
                                 className="border border-black rounded-md p-1 w-full"
@@ -191,61 +193,11 @@ export default function EditButton(props: any) {
                               />
                             </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              สาขาวิชา :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="สาขาวิชา"
-                                value={major}
-                                onChange={(e) => setMajor(e.target.value)}
-                              />
-                            </p>
+                            
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ระดับผู้ใช้ :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="ระดับผู้ใช้"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                              />
-                            </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ระดับแอดมิน :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <select
-                                id="form"
-                                className="border border-black rounded-md p-1 w-full h-10"
-                                value={admin}
-                                onChange={(e) => setAdmin(e.target.value)}
-                              >
-                                <option value="true">true</option>
-                                <option value="false">false</option>
-                              </select>
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ห้องเรียน :
-                            </p>
-
-                            {Array.isArray(userData?.room) &&
-                            userData?.room.length > 0 ? (
-                              <p className="py-2 col-span-12 md:col-span-9">
-                                {userData?.room}
-                              </p>
-                            ) : (
-                              <p className="py-2 col-span-12 md:col-span-9">
-                                ไม่มี
-                              </p>
-                            )}
+                      
+                
                           </div>
                         </div>
                       </div>

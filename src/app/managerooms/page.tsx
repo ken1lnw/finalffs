@@ -1,19 +1,22 @@
 "use client";
+import AddButton from "./addbutton/page";
 import DeleteButton from "./deletebutton/page";
+import DetailButton from "./detailbutton/page";
 import EditButton from "./editbutton/page";
-import PrintButton from "./printbutton/page";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 
+// import PrintButton from "./printbutton/page";
 
 import { useState, useEffect } from "react";
+import StudentEditButton from "./studenteditbutton/page";
 
-export default function History() {
+export default function ManageRooms() {
   const [data, setData] = useState<any>(null);
   const [isLoading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // จำนวนรายการต่อหน้า
-  const totalItems = data ? data.docs.length : 0; // จำนวนรายการทั้งหมด
+  const totalItems = data ? data.rooms.length : 0; // จำนวนรายการทั้งหมด
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,14 +24,14 @@ export default function History() {
   };
 
   const refreshData = () => {
-    fetch(`/api/dbdocs/user/621721100411`)
+    fetch("/api/dbroom")
       .then((res) => res.json())
       .then((data) => {
         setData(data);
         if (data) {
           console.log(data);
         } else {
-          console.log("error set Docs data");
+          console.log("error set Rooms data");
         }
         setLoading(false);
       });
@@ -52,25 +55,13 @@ export default function History() {
   };
 
   const filteredData =
-    data?.docs?.filter((item: any) => {
+    data?.rooms?.filter((item: any) => {
       const keys = [
-        "documentsId",
-        "docType",
-        "date",
-        "major",
-        "status",
-        "studentId",
-        "studentName",
-        "studentLastName",
+        "roomId",
         "advisorId",
+        "advisorPrefix",
         "advisorName",
         "advisorLastName",
-        "headDepartmentId",
-        "headDepartmentName",
-        "headDepartmentLastName",
-        "officerId",
-        "officerName",
-        "officerLastName",
       ];
       return keys.some((key) =>
         item[key]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -82,17 +73,17 @@ export default function History() {
 
   return (
     <>
-      <div className="overflow-x-auto">
-        <div className="pt-4 relative mx-auto text-black container">
+      <div className="overflow-x-auto mb-10">
+        <div className="pt-4 relative mx-auto text-black container block md:flex md:items-center">
           <input
-            className="border-2 border-gray-500 bg-white h-10 px-5 rounded-lg text-sm focus:outline-none w-full md:w-1/4"
+            className="border-2 border-gray-500 bg-white h-10 px-5 mb-2 md:mb-0 rounded-lg text-sm focus:outline-none w-full md:w-1/4"
             type="search"
             name="search"
             placeholder="Search"
             value={searchTerm}
             onChange={handleSearchChange}
           />
-          <button type="submit" className="absolute right-0 top-0"></button>
+          <AddButton refreshData={refreshData}/>          
         </div>
 
         <div className="bg-white mx-auto container pt-4">
@@ -100,14 +91,18 @@ export default function History() {
             <table className="table-auto w-full ">
               <thead className="border-b">
                 <tr className="bg-blue-400">
-                  <th className="text-left p-4 font-medium">รหัสคำร้อง</th>
-                  <th className="text-left p-4 font-medium">คำร้อง</th>
+                  <th className="text-left p-4 font-medium">ห้องเรียน</th>
                   <th className="text-left p-4 font-medium">
-                    รหัสนักศึกษาผู้ยื่น
+                    รหัสอาจารย์ที่ปรึกษา
                   </th>
-                  <th className="text-left p-4 font-medium">วันที่</th>
+                  <th className="text-left p-4 font-medium">
+                    อาจารย์ที่ปรึกษา
+                  </th>
                   <th className="text-left p-4 font-medium">สาขาวิชา</th>
-                  <th className="text-left p-4 font-medium">สถานะเอกสาร</th>
+                  <th className="text-left p-4 font-medium">
+                    จำนวนนักศึกษาในห้อง
+                  </th>
+
                   <th className="text-left p-4 font-medium">จัดการ</th>
                 </tr>
               </thead>
@@ -119,27 +114,37 @@ export default function History() {
                   )
                   .map((item: any, index: number) => (
                     <tr key={index} className="border-b hover:bg-gray-50">
+                      <td className="p-4">{item.roomId || "ไม่มีข้อมูล"}</td>
+                      <td className="p-4">{item.advisorId || "ไม่มีข้อมูล"}</td>
+
                       <td className="p-4">
-                        {item.documentsId || "ไม่มีข้อมูล"}
+                        {item.advisorName && item.advisorLastName
+                          ? `${item.advisorName} ${item.advisorLastName}`
+                          : "ไม่มีข้อมูล"}
                       </td>
-                      <td className="p-4">{item.docType || "ไม่มีข้อมูล"}</td>
-                      <td className="p-4">{item.studentId || "ไม่มีข้อมูล"}</td>
-                      <td className="p-4">{item.date || "ไม่มีข้อมูล"}</td>
-                      <td className="p-4">{item.major || "ไม่มีข้อมูล"}</td>
-                      <td className="p-4">{item.status || "ไม่มีข้อมูล"}</td>
+
+                      <td className="p-4">{item.roomMajor || "ไม่มีข้อมูล"}</td>
+
+                      <td className="p-4 textce">
+                        {item.student ? item.student.length : "ไม่มีข้อมูล"}
+                      </td>
+
                       <td className="p-4">
-                        <PrintButton documentsId={item.documentsId} />
+                        {/* <PrintButton documentsId={item.documentsId} /> 
+                          <EditButton />  */}
 
-                        {/* <EditButton />  */}
-                        {/* <DetailButton user={item} />
+                        <DetailButton room={item}/>
 
-                        <EditButton user={item} 
-                        refreshData={refreshData}/> */}
+                        <EditButton room={item} 
+                        refreshData={refreshData}/>
+
+                        <StudentEditButton room={item} />
 
                         <DeleteButton
-                          documentsId={item.documentsId}
+                          roomId={item.roomId}
                           refreshData={refreshData}
                         />
+                        
                       </td>
                     </tr>
                   ))}
@@ -221,3 +226,4 @@ export default function History() {
     </>
   );
 }
+//
