@@ -20,6 +20,8 @@ export default function StudentTable(props: any) {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const roomData = props.roomId;
+  const roomMajorData = props.roomMajor;
+
   const studentsData = props.students;
 
 
@@ -121,7 +123,7 @@ export default function StudentTable(props: any) {
           />
           <button type="submit" className="absolute right-0 top-0"></button>
 
-          <AddButton roomId={roomData} refreshData={refreshData}/>    
+          <AddButton roomId={roomData} roomMajor={roomMajorData} refreshData={refreshData}/>    
         </div>
 
         <div className="bg-white mx-auto container pt-4">

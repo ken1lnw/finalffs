@@ -1,46 +1,101 @@
 "use client";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import StudentTable from "./studenttable/page";
 
-export default function StudentEditButton(props: any) {
+export default function AddButton(props: any) {
   const [open, setOpen] = useState(false);
 
   // const [educationLevel, setEducationLevel] = useState("");
   // const [faculty, setFaculty] = useState("");
 
   const cancelButtonRef = useRef(null);
-  const roomData = props.room;
-  const [roomId, setRoomId] = useState(roomData?.roomId);
-  const [roomMajor, setRoomMajor] = useState(roomData?.roomMajor);
-  const [teacherId, setTeacherId] = useState(roomData?.advisorId);
-  const [prefix, setPrefix] = useState(roomData?.advisorPrefix);
-  const [firstName, setFirstName] = useState(roomData?.advisorName);
-  const [lastName, setLastName] = useState(roomData?.advisorLastName);
+  const userData = props.user;
+  const [studentId, setStudentId] = useState("");
 
+  const [formValid, setFormValid] = useState(false);
+  const [data, setData] = useState<any>(null);
+  const [isLoading, setLoading] = useState(true);
+  const roomData = props.roomId;
+
+  const validateForm = () => {
+    // Perform validation for each input field
+    const isValid =
+    studentId !== "";
+
+    setFormValid(isValid);
+
+    return isValid;
+  };
 
   const resetStates = () => {
-    setRoomId(roomData?.roomId);
-    setRoomMajor(roomData?.roomMajor);
-    setTeacherId(roomData?.advisorId);
-    setPrefix(roomData?.advisorPrefix);
-    setFirstName(roomData?.advisorName);
-    setLastName(roomData?.advisorLastName);
+    setStudentId("");
+
   };
+
+  const handleSubmit = async () => {
+    if (validateForm()) {
+      const userData = await usercheck();
+      if (userData && Object.keys(userData).length > 0) {
+        handleConfirm();
+      } else {
+        console.log("error no user found");
+      }
+    } else {
+      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+    }
+  };
+  
+  // const usercheck = async () => {
+  //   let userData = null;
+  //   await fetch(`/api/dbuser/${studentId}`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (data.users && Object.keys(data.users).length > 0) {
+  //         console.log(data);
+  //         userData = data;
+  //       } else {
+  //         console.log("error set Docs data");
+  //       }
+  //       setLoading(false);
+  //     });
+  //   return userData;
+  // };
+
+  const usercheck = async () => {
+    let userData = null;
+    await fetch(`/api/dbuser/${studentId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.users && Object.keys(data.users).length > 0) {
+          // Check if the user already has a room
+          console.log("ถึง data.users && Object.keys(data.users)");
+
+          if (data.users.room && data.users.room.length == 0) {
+            console.log("error: user already has room");
+          } else {
+            console.log(data);
+            userData = data;
+          }
+        } else {
+          console.log("error set Users data");
+        }
+        setLoading(false);
+      });
+    return userData;
+  };
+  
+  
+  
+
 
   const handleConfirm = async () => {
     try {
-
-      const response = await fetch(`/api/dbroom/${roomData.roomId}`, {
+      const response = await fetch(`/api/dbroom/userinroom/edit/${roomData}`, {
         method: "PUT",
         body: JSON.stringify({
-          
-          roomMajor: roomMajor,
-          advisorId: teacherId,
-          advisorPrefix: prefix,
-          advisorName: firstName,
-          advisorLastName: lastName,
+          student: [studentId]
+
         }),
         headers: {
           "Content-Type": "application/json",
@@ -48,23 +103,30 @@ export default function StudentEditButton(props: any) {
       });
 
       // ดึงข้อมูลที่สร้างเอกสารมาจาก response
-      const EditedData = await response.json();
-      console.log("แก้ไขข้อมูลห้องสำเร็จ");
-      console.log(EditedData);
+      const CreatedData = await response.json();
+      setOpen(false);
+      console.log("เพิ่มนักศึกษาสำเร็จ");
+      console.log(CreatedData);
       props.refreshData();
+      resetStates();
     } catch (error) {
-      console.log("Error while Editing Room");
+      console.log("Error while Adding Student", error);
     }
   };
+
+  useEffect(() => {
+  console.log(roomData)
+  }, [])
+  
 
   return (
     <>
       <button
         type="button"
-        className=" justify-center rounded-md bg-blue-500 px-2 py-2 mr-1 hover:bg-blue  -400"
+        className="flex items-center justify-center rounded-md bg-green-500 px-2 py-2 md:mr-1 md:ml-1 hover:bg-green-400 h-10 text-white w-full md:w-auto "
         onClick={() => setOpen(true)} // Set open state to true when button is clicked
       >
-         <svg
+        <svg
           className="w-5 h-5 text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
@@ -73,10 +135,11 @@ export default function StudentEditButton(props: any) {
         >
           <path
             fillRule="evenodd"
-            d="M5 8a4 4 0 1 1 7.8 1.3l-2.5 2.5A4 4 0 0 1 5 8Zm4 5H7a4 4 0 0 0-4 4v1c0 1.1.9 2 2 2h2.2a3 3 0 0 1-.1-1.6l.6-3.4a3 3 0 0 1 .9-1.5L9 13Zm9-5a3 3 0 0 0-2 .9l-6 6a1 1 0 0 0-.3.5L9 18.8a1 1 0 0 0 1.2 1.2l3.4-.7c.2 0 .3-.1.5-.3l6-6a3 3 0 0 0-2-5Z"
+            d="M9 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H7Zm8-1c0-.6.4-1 1-1h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 0 1-1-1Z"
             clipRule="evenodd"
           />
         </svg>
+        เพิ่มนักศึกษา
       </button>
 
       <Transition.Root show={open} as={Fragment}>
@@ -102,7 +165,7 @@ export default function StudentEditButton(props: any) {
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div className="md:flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -126,35 +189,46 @@ export default function StudentEditButton(props: any) {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          แก้ไขข้อมูลนักศึกษาห้อง {roomData?.roomId} 
+                          เพิ่มนักศึกษา
                         </Dialog.Title>
                         <div className="mt-2">
                           <div className="grid grid-cols-12 gap-2 items-center">
+                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
+                            รหัสนักศึกษา :
+                            </p>
+                            <p className="py-2 col-span-12 md:col-span-9">
+                              <input
+                                type="text"
+                                className="border border-black rounded-md p-1 w-full"
+                                placeholder="รหัสห้องเรียน"
+                                value={studentId}
+                                onChange={(e) => {
+                                  // Convert input to uppercase and remove special characters
+                                  const newValue = e.target.value
+                                    .toUpperCase()
+                                    .replace(/[^0-9]/gi, "");
+                                  setStudentId(newValue);
+                                }}
+                              />
+                            </p>
 
-                            
-                      
-
-                      
-                
                           </div>
                         </div>
                       </div>
                     </div>
-                    <StudentTable students={roomData?.student} roomId={roomData?.roomId}/>
                   </div>
-
-
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
                       type="button"
-                      className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
+                      className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
                       onClick={() => {
-                        setOpen(false);
+                        // setOpen(false);
+                        handleSubmit();
                       }}
                     >
-                      ปิด
+                      สร้าง
                     </button>
-                    {/* <button
+                    <button
                       type="button"
                       className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                       onClick={() => {
@@ -164,7 +238,7 @@ export default function StudentEditButton(props: any) {
                       ref={cancelButtonRef}
                     >
                       ยกเลิก
-                    </button> */}
+                    </button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

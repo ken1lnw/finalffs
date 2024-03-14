@@ -1,56 +1,82 @@
 "use client";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
-export default function EditButton(props: any) {
+export default function AddButton(props: any) {
   const [open, setOpen] = useState(false);
 
   // const [educationLevel, setEducationLevel] = useState("");
   // const [faculty, setFaculty] = useState("");
 
   const cancelButtonRef = useRef(null);
-  const userData = props.user;
-  const [studentID, setStudentID] = useState(userData?.userId);
-  const [prefix, setPrefix] = useState(userData?.prefix);
-  const [firstName, setFirstName] = useState(userData?.name);
-  const [lastName, setLastName] = useState(userData?.lname);
-  const [faculty, setFaculty] = useState(userData?.faculty);
-  const [major, setMajor] = useState(userData?.major);
-  const [role, setRole] = useState(userData?.role);
-  const [admin, setAdmin] = useState(userData?.admin.toString());
+  const userData = props.userData;
+  const [roomId, setRoomId] = useState("");
+  const [major, setMajor] = useState(userData ? userData.major : "ไม่พบข้อมูล");
+  const [teacherId, setTeacherId] = useState(userData ? userData.userId : "ไม่พบข้อมูล");
+  const [prefix, setPrefix] = useState(userData ?  userData.prefix : "ไม่พบข้อมูล");
+  const [firstName, setFirstName] = useState(userData ?  userData.name : "ไม่พบข้อมูล");
+  const [lastName, setLastName] = useState(userData ?  userData.lname : "ไม่พบข้อมูล");
+  const [formValid, setFormValid] = useState(false);
+
+  useEffect(() => {
+    if (userData) {
+      setMajor(userData.major);
+      setTeacherId(userData.userId);
+      setPrefix(userData.prefix);
+      setFirstName(userData.name);
+      setLastName(userData.lname);
+    }
+  }, [userData]);
+
+  const validateForm = () => {
+    // Perform validation for each input field
+    const isValid =
+      roomId !== "" &&
+      prefix !== "" &&
+      firstName !== "" &&
+      lastName !== "" &&
+      major !== "";
+
+    setFormValid(isValid);
+
+    return isValid;
+  };
 
   const resetStates = () => {
-    setStudentID(userData?.userId);
-    setPrefix(userData?.prefix);
-    setFirstName(userData?.name);
-    setLastName(userData?.lname);
-    setFaculty(userData?.faculty);
-    setMajor(userData?.major);
-    setRole(userData?.role);
-    setAdmin(userData?.admin.toString());
+    setRoomId("");
+    // setMajor(userData.major);
+    // setTeacherId(userData.userId);
+    // setPrefix(userData.prefix);
+    // setFirstName(userData.name);
+    // setLastName(userData.lname);
+  };
+
+  const handleSubmit = () => {
+    if (validateForm()) {
+      handleConfirm();
+      setOpen(false);
+    } else {
+      // Handle form validation errors or provide feedback to the user
+      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+    }
   };
 
   const handleConfirm = async () => {
+
     try {
-      let isAdmin; // ประกาศตัวแปร isAdmin ในขอบเขตที่กว้างกว่า
 
-      if (admin == "true") {
-        isAdmin = true;
-      } else {
-        isAdmin = false;
-      }
-
-      const response = await fetch(`/api/dbuser/${userData.userId}`, {
-        method: "PUT",
+      const response = await fetch(`/api/dbroom/`, {
+        method: "POST",
         body: JSON.stringify({
           // userId: studentID,
-          prefix: prefix,
-          name: firstName,
-          lname: lastName,
-          major: major,
-          role: role,
-          admin: isAdmin,
+          roomId: roomId,
+          advisorId: teacherId,
+          advisorPrefix: prefix,
+          advisorName: firstName,
+          advisorLastName: lastName,
+          roomMajor: major,
+
         }),
         headers: {
           "Content-Type": "application/json",
@@ -58,32 +84,41 @@ export default function EditButton(props: any) {
       });
 
       // ดึงข้อมูลที่สร้างเอกสารมาจาก response
-      const EditedData = await response.json();
-      console.log("แก้ไขข้อมูลสำเร็จ");
-      console.log(EditedData);
+      const CreatedData = await response.json();
+      setOpen(false);
+      console.log("สร้างห้องสำเร็จ");
+      console.log(CreatedData);
       props.refreshData();
+      resetStates();
     } catch (error) {
-      console.log("Error while Editing User");
+      console.log("Error while Creating Room", error);
     }
   };
 
   return (
     <>
       <button
-        type="button"
-        className=" justify-center rounded-md bg-yellow-500 px-2 py-2 mr-1 hover:bg-yellow-400"
-        onClick={() => setOpen(true)} // Set open state to true when button is clicked
-      >
+  type="button"
+  className="flex items-center justify-center rounded-md bg-green-500 px-2 py-2 md:mr-1 md:ml-1 hover:bg-green-400 h-10 text-white w-full md:w-auto "
+  onClick={() => {
+    setOpen(true);
+    // console.log(userData);
+  }}
+>
         <svg
-          className="w-5 h-5 text-white"
+          className="w-5 h-5 text-white mr-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
-          viewBox="0 0 20 18"
+          viewBox="0 0 24 24"
         >
-          <path d="M12.687 14.408a3.01 3.01 0 0 1-1.533.821l-3.566.713a3 3 0 0 1-3.53-3.53l.713-3.566a3.01 3.01 0 0 1 .821-1.533L10.905 2H2.167A2.169 2.169 0 0 0 0 4.167v11.666A2.169 2.169 0 0 0 2.167 18h11.666A2.169 2.169 0 0 0 16 15.833V11.1l-3.313 3.308Zm5.53-9.065.546-.546a2.518 2.518 0 0 0 0-3.56 2.576 2.576 0 0 0-3.559 0l-.547.547 3.56 3.56Z" />
-          <path d="M13.243 3.2 7.359 9.081a.5.5 0 0 0-.136.256L6.51 12.9a.5.5 0 0 0 .59.59l3.566-.713a.5.5 0 0 0 .255-.136L16.8 6.757 13.243 3.2Z" />
+          <path
+            fillRule="evenodd"
+            d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm11-4.2a1 1 0 1 0-2 0V11H7.8a1 1 0 1 0 0 2H11v3.2a1 1 0 1 0 2 0V13h3.2a1 1 0 1 0 0-2H13V7.8Z"
+            clipRule="evenodd"
+          />
         </svg>
+        เพิ่มห้องเรียน
       </button>
 
       <Transition.Root show={open} as={Fragment}>
@@ -133,23 +168,57 @@ export default function EditButton(props: any) {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          ข้อมูล {userData?.prefix} {userData?.name}{" "}
-                          {userData?.lname}
+                          เพิ่มห้องเรียน
                         </Dialog.Title>
                         <div className="mt-2">
                           <div className="grid grid-cols-12 gap-2 items-center">
+           
+
                             <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              รหัสนักศึกษา :
+                              รหัสห้องเรียน :
                             </p>
                             <p className="py-2 col-span-12 md:col-span-9">
-                              {/* <input
+                              <input
                                 type="text"
                                 className="border border-black rounded-md p-1 w-full"
-                                placeholder="รหัสนักศึกษา"
-                                value={studentID || "ไม่พบข้อมูล"}
-                                onChange={(e) => setStudentID(e.target.value)}
-                              /> */}
-                              {studentID}
+                                placeholder="รหัสห้องเรียน"
+                                value={roomId}
+                                onChange={(e) => {
+                                  // Convert input to uppercase and remove special characters
+                                  const newValue = e.target.value.toUpperCase().replace(/[^A-Z0-9]/gi, '');
+                                  setRoomId(newValue);
+                              }}
+                              />
+                            </p>
+
+                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
+                              สาขาวิชา :
+                            </p>
+                            <p className="py-2 col-span-12 md:col-span-9">
+                              <input
+                                type="text"
+                                className="border border-black rounded-md p-1 w-full disabled:bg-slate-200"
+                                placeholder="สาขาวิชา"
+                                value={major}
+                                disabled
+                                onChange={(e) => setMajor(e.target.value)}
+                              />
+                            </p>
+
+                            <p className="py-2 col-span-12">อาจารย์ที่ปรึกษา</p>
+
+                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
+                              รหัสประจำตัว :
+                            </p>
+                            <p className="py-2 col-span-12 md:col-span-9">
+                              <input
+                                type="text"
+                                className="border border-black rounded-md p-1 w-full disabled:bg-slate-200"
+                                placeholder="รหัสประจำตัว"
+                                value={teacherId}
+                                disabled
+                                onChange={(e) => setTeacherId(e.target.value)}
+                              />
                             </p>
 
                             <p className="py-2 col-span-12 md:col-span-3 md:text-right">
@@ -158,9 +227,10 @@ export default function EditButton(props: any) {
                             <p className="py-2 col-span-12 md:col-span-9">
                               <input
                                 type="text"
-                                className="border border-black rounded-md p-1 w-full"
+                                className="border border-black rounded-md p-1 w-full disabled:bg-slate-200"
                                 placeholder="คำนำหน้า"
                                 value={prefix}
+                                disabled
                                 onChange={(e) => setPrefix(e.target.value)}
                               />
                             </p>
@@ -171,9 +241,10 @@ export default function EditButton(props: any) {
                             <p className="py-2 col-span-12 md:col-span-9">
                               <input
                                 type="text"
-                                className="border border-black rounded-md p-1 w-full"
+                                className="border border-black rounded-md p-1 w-full disabled:bg-slate-200"
                                 placeholder="ชื่อ"
                                 value={firstName}
+                                disabled
                                 onChange={(e) => setFirstName(e.target.value)}
                               />
                             </p>
@@ -184,68 +255,14 @@ export default function EditButton(props: any) {
                             <p className="py-2 col-span-12 md:col-span-9">
                               <input
                                 type="text"
-                                className="border border-black rounded-md p-1 w-full"
+                                className="border border-black rounded-md p-1 w-full disabled:bg-slate-200"
                                 placeholder="นามสกุล"
                                 value={lastName}
+                                disabled
                                 onChange={(e) => setLastName(e.target.value)}
                               />
                             </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              สาขาวิชา :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="สาขาวิชา"
-                                value={major}
-                                onChange={(e) => setMajor(e.target.value)}
-                              />
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ระดับผู้ใช้ :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="ระดับผู้ใช้"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                              />
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ระดับแอดมิน :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <select
-                                id="form"
-                                className="border border-black rounded-md p-1 w-full h-10"
-                                value={admin}
-                                onChange={(e) => setAdmin(e.target.value)}
-                              >
-                                <option value="true">true</option>
-                                <option value="false">false</option>
-                              </select>
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ห้องเรียน :
-                            </p>
-
-                            {Array.isArray(userData?.room) &&
-                            userData?.room.length > 0 ? (
-                              <p className="py-2 col-span-12 md:col-span-9">
-                                {userData?.room}
-                              </p>
-                            ) : (
-                              <p className="py-2 col-span-12 md:col-span-9">
-                                ไม่มี
-                              </p>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -256,11 +273,11 @@ export default function EditButton(props: any) {
                       type="button"
                       className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
                       onClick={() => {
-                        setOpen(false);
-                        handleConfirm();
+                        // setOpen(false);
+                        handleSubmit();
                       }}
                     >
-                      ยืนยัน
+                      สร้าง
                     </button>
                     <button
                       type="button"

@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
@@ -11,24 +11,17 @@ export default function AddButton(props: any) {
 
   const cancelButtonRef = useRef(null);
   const userData = props.user;
-  const [roomId, setRoomId] = useState("");
-  const [major, setMajor] = useState("");
-  const [teacherId, setTeacherId] = useState("");
-  const [prefix, setPrefix] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [studentId, setStudentId] = useState("");
+
   const [formValid, setFormValid] = useState(false);
-
-
+  const [data, setData] = useState<any>(null);
+  const [isLoading, setLoading] = useState(true);
+  const roomData = props.roomId;
+  const roomMajorData = props.roomMajor;
 
   const validateForm = () => {
     // Perform validation for each input field
-    const isValid =
-      roomId !== "" &&
-      prefix !== "" &&
-      firstName !== "" &&
-      lastName !== "" &&
-      major !== "";
+    const isValid = studentId !== "";
 
     setFormValid(isValid);
 
@@ -36,56 +29,89 @@ export default function AddButton(props: any) {
   };
 
   const resetStates = () => {
-    setRoomId("");
-    setMajor("");
-    setTeacherId("");
-    setPrefix("");
-    setFirstName("");
-    setLastName("");
+    setStudentId("");
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
-      handleConfirm();
-      setOpen(false);
+      const userData = await usercheck();
+      if (userData && Object.keys(userData).length > 0) {
+        handleConfirm();
+      } else {
+        console.log("error no user found");
+        // alert("ผู้ใช้งานมีห้องอยู่แล้ว");
+      }
     } else {
-      // Handle form validation errors or provide feedback to the user
       alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
     }
   };
 
+  const usercheck = async () => {
+    let userData = null;
+    await fetch(`/api/dbuser/${studentId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.users && Object.keys(data.users).length > 0) {
+          // Check if the user already has a room
+          // console.log("ถึง data.users && Object.keys(data.users)");
+
+          if (data.users.room && data.users.room.length == 0) {
+            if (data.users.major == roomMajorData) {
+              console.log(data);
+              userData = data;
+            } else {
+              console.log("error: user not the same major");
+              alert("ผู้ใช้งานไม่ใช่นักศึกษาภายในสาขาวิชา");
+            }
+          } else {
+            console.log("error: user already has room");
+            alert("ผู้ใช้งานมีห้องอยู่แล้ว");
+          }
+        } else {
+          console.log("error set Users data");
+          alert("ไม่พบผู้ใช้งาน");
+        }
+        setLoading(false);
+      });
+    return userData;
+  };
+
   const handleConfirm = async () => {
-
     try {
-
-      const response = await fetch(`/api/dbroom/`, {
-        method: "POST",
+      const response = await fetch(`/api/dbroom/userinroom/edit/${roomData}`, {
+        method: "PUT",
         body: JSON.stringify({
-          // userId: studentID,
-          roomId: roomId,
-          advisorId: teacherId,
-          advisorPrefix: prefix,
-          advisorName: firstName,
-          advisorLastName: lastName,
-          roomMajor: major,
-
+          student: [studentId],
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
 
+      if (!response.ok) {
+        // throw new Error('HTTP status ' + response.status);
+        if (response.status == 400) {
+          alert(`ผู้ใช้งานนี้อยู่ภายในห้องนี้แล้ว`);
+        } else {
+          alert(`ผิดพลาด`);
+        }
+      }
       // ดึงข้อมูลที่สร้างเอกสารมาจาก response
       const CreatedData = await response.json();
       setOpen(false);
-      console.log("สร้างห้องสำเร็จ");
+      console.log("เพิ่มนักศึกษาสำเร็จ");
+       alert("เพิ่มนักศึกษาสำเร็จ");
       console.log(CreatedData);
       props.refreshData();
       resetStates();
     } catch (error) {
-      console.log("Error while Creating Room", error);
+      console.log("Error while Adding Student", error);
     }
   };
+
+  useEffect(() => {
+    console.log(roomMajorData);
+  }, []);
 
   return (
     <>
@@ -95,7 +121,7 @@ export default function AddButton(props: any) {
         onClick={() => setOpen(true)} // Set open state to true when button is clicked
       >
         <svg
-          className="w-5 h-5 text-white mr-1"
+          className="w-5 h-5 text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
@@ -103,11 +129,11 @@ export default function AddButton(props: any) {
         >
           <path
             fillRule="evenodd"
-            d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm11-4.2a1 1 0 1 0-2 0V11H7.8a1 1 0 1 0 0 2H11v3.2a1 1 0 1 0 2 0V13h3.2a1 1 0 1 0 0-2H13V7.8Z"
+            d="M9 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H7Zm8-1c0-.6.4-1 1-1h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 0 1-1-1Z"
             clipRule="evenodd"
           />
         </svg>
-        เพิ่มห้องเรียน
+        เพิ่มนักศึกษา
       </button>
 
       <Transition.Root show={open} as={Fragment}>
@@ -157,96 +183,28 @@ export default function AddButton(props: any) {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          เพิ่มห้องเรียน
+                          เพิ่มนักศึกษา
                         </Dialog.Title>
                         <div className="mt-2">
                           <div className="grid grid-cols-12 gap-2 items-center">
-           
-
                             <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              รหัสห้องเรียน :
+                              รหัสนักศึกษา :
                             </p>
                             <p className="py-2 col-span-12 md:col-span-9">
                               <input
                                 type="text"
                                 className="border border-black rounded-md p-1 w-full"
-                                placeholder="รหัสห้องเรียน"
-                                value={roomId}
+                                placeholder="รหัสนักศึกษา"
+                                value={studentId}
                                 onChange={(e) => {
                                   // Convert input to uppercase and remove special characters
-                                  const newValue = e.target.value.toUpperCase().replace(/[^A-Z0-9]/gi, '');
-                                  setRoomId(newValue);
-                              }}
+                                  const newValue = e.target.value
+                                    .toUpperCase()
+                                    .replace(/[^0-9]/gi, "");
+                                  setStudentId(newValue);
+                                }}
                               />
                             </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              สาขาวิชา :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="สาขาวิชา"
-                                value={major}
-                                onChange={(e) => setMajor(e.target.value)}
-                              />
-                            </p>
-
-                            <p className="py-2 col-span-12">อาจารย์ที่ปรึกษา</p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              รหัสประจำตัว :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="รหัสประจำตัว"
-                                value={teacherId}
-                                onChange={(e) => setTeacherId(e.target.value)}
-                              />
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              คำนำหน้า :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="คำนำหน้า"
-                                value={prefix}
-                                onChange={(e) => setPrefix(e.target.value)}
-                              />
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ชื่อ :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="ชื่อ"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                              />
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              นามสกุล :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="นามสกุล"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                              />
-                            </p>
-
                           </div>
                         </div>
                       </div>

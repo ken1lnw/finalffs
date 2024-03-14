@@ -8,7 +8,6 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 
 import { useState, useEffect } from "react";
 import DeleteButton from "./deletebutton/page";
-import AddButton from "./addbutton/page";
 
 export default function StudentTable(props: any) {
   const [data, setData] = useState<any>(null);
@@ -29,47 +28,31 @@ export default function StudentTable(props: any) {
   };
 
   const refreshData = () => {
-    fetch(`/api/dbroom/${roomData}`)
-    .then((res) => res.json())
-    .then((data) => {
-      // setData(data);
-      if (data) {
-        console.log(data);
-
-        fetch("/api/dbroom/student",{
-          method: "POST", // หรือ PUT หรือเมธอดอื่นๆ ตามที่ API ของคุณกำหนด
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            students: data?.rooms?.student // ส่งข้อมูลจาก roomData.students
-          })
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            setData(data);
-            if (data) {
-              console.log(data);
-            } else {
-              console.log("error set Students data");
-            }
-          });
-
-
-      } else {
-        console.log("error set Rooms data");
-      }
-      setLoading(false);
-    });
-
-
-    
+    fetch("/api/dbroom/student",{
+      method: "POST", // หรือ PUT หรือเมธอดอื่นๆ ตามที่ API ของคุณกำหนด
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        students: studentsData // ส่งข้อมูลจาก roomData.students
+      })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        if (data) {
+          console.log(data);
+        } else {
+          console.log("error set Students data");
+        }
+        setLoading(false);
+      });
   };
 
   // Call refreshData in useEffect
   useEffect(() => {
     refreshData();
-    // console.log(studentsData);
+    console.log(studentsData);
   }, []);
 
   const handlePreviousPage = () => {
@@ -110,9 +93,9 @@ export default function StudentTable(props: any) {
   return (
     <>
       <div className="overflow-x-auto mb-10">
-        <div className="pt-4 relative mx-auto text-black container block md:flex md:items-center">
+        <div className="pt-4 relative mx-auto text-black container">
           <input
-            className="border-2 border-gray-500 bg-white h-10 px-5 mb-2 md:mb-0 rounded-lg text-sm focus:outline-none w-full md:w-1/4"
+            className="border-2 border-gray-500 bg-white h-10 px-5 rounded-lg text-sm focus:outline-none w-full md:w-1/4"
             type="search"
             name="search"
             placeholder="Search"
@@ -120,8 +103,6 @@ export default function StudentTable(props: any) {
             onChange={handleSearchChange}
           />
           <button type="submit" className="absolute right-0 top-0"></button>
-
-          <AddButton roomId={roomData} refreshData={refreshData}/>    
         </div>
 
         <div className="bg-white mx-auto container pt-4">
@@ -133,7 +114,7 @@ export default function StudentTable(props: any) {
                   <th className="text-left p-4 font-medium">คำนำหน้า</th>
                   <th className="text-left p-4 font-medium">ชื่อ</th>
                   <th className="text-left p-4 font-medium">นามสกุล</th>
-                  <th className="text-left p-4 font-medium">จัดการ</th>
+                  {/* <th className="text-left p-4 font-medium">จัดการ</th> */}
 
 
                 </tr>
@@ -150,8 +131,7 @@ export default function StudentTable(props: any) {
                       <td className="p-4">{item.prefix || "ไม่มีข้อมูล"}</td>
                       <td className="p-4">{item.name || "ไม่มีข้อมูล"}</td>
                       <td className="p-4">{item.lname || "ไม่มีข้อมูล"}</td>
-                      <td className="p-4">
-                        <DeleteButton studentId={item.userId} roomId={roomData} refreshData={refreshData} /></td>
+                      {/* <td className="p-4"><DeleteButton studentId={item.userId} roomId={roomData} /></td> */}
                 
                     </tr>
                   ))}

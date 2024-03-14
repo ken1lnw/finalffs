@@ -13,6 +13,7 @@ const navigation = [
   { name: "จัดการคำร้อง", href: "/managedocs", current: false },
   { name: "จัดการผู้ใช้งาน", href: "/manageusers", current: false },
   { name: "จัดการห้องเรียน", href: "/managerooms", current: false },
+  { name: "จัดการห้องเรียน(อาจารย์)", href: "/teachermanagerooms", current: false },
 ];
 
 function classNames(...classes: any) {
