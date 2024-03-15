@@ -10,33 +10,18 @@ export default function AddButton(props: any) {
   // const [faculty, setFaculty] = useState("");
 
   const cancelButtonRef = useRef(null);
-  const userData = props.userData;
-  const [roomId, setRoomId] = useState("");
-  const [major, setMajor] = useState(userData ? userData.major : "ไม่พบข้อมูล");
-  const [teacherId, setTeacherId] = useState(userData ? userData.userId : "ไม่พบข้อมูล");
-  const [prefix, setPrefix] = useState(userData ?  userData.prefix : "ไม่พบข้อมูล");
-  const [firstName, setFirstName] = useState(userData ?  userData.name : "ไม่พบข้อมูล");
-  const [lastName, setLastName] = useState(userData ?  userData.lname : "ไม่พบข้อมูล");
+  const [majorId, setMajorId] = useState("");
+  const [teacherId, setTeacherId] = useState("");
+  const [teacherData, setTeacherData] = useState<any>(null);
+
   const [formValid, setFormValid] = useState(false);
 
-  useEffect(() => {
-    if (userData) {
-      setMajor(userData.major);
-      setTeacherId(userData.userId);
-      setPrefix(userData.prefix);
-      setFirstName(userData.name);
-      setLastName(userData.lname);
-    }
-  }, [userData]);
 
   const validateForm = () => {
     // Perform validation for each input field
-    const isValid =
-      roomId !== "" &&
-      prefix !== "" &&
-      firstName !== "" &&
-      lastName !== "" &&
-      major !== "";
+    // const isValid = majorId !== "" && teacherId !== "";
+    const isValid = majorId !== "";
+
 
     setFormValid(isValid);
 
@@ -44,7 +29,8 @@ export default function AddButton(props: any) {
   };
 
   const resetStates = () => {
-    setRoomId("");
+    setMajorId("");
+    // setTeacherId("");
     // setMajor(userData.major);
     // setTeacherId(userData.userId);
     // setPrefix(userData.prefix);
@@ -55,6 +41,7 @@ export default function AddButton(props: any) {
   const handleSubmit = () => {
     if (validateForm()) {
       handleConfirm();
+      // usercheck();
       setOpen(false);
     } else {
       // Handle form validation errors or provide feedback to the user
@@ -62,58 +49,138 @@ export default function AddButton(props: any) {
     }
   };
 
+
+  // const usermajoredit = async () => {
+  //   try {
+  //     const response = await fetch(`/api/dbuser/${teacherId}`, {
+  //       method: "PUT",
+  //       body: JSON.stringify({
+  //         major: majorId
+  //       }),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+
+  //     // ดึงข้อมูลที่สร้างเอกสารมาจาก response
+  //     const CreatedData = await response.json();
+
+
+  //     if (!response.ok) {
+  //       // throw new Error('HTTP status ' + response.status);
+  //         alert(`ผิดพลาดระหว่างแก้ไขสาขาวิชาให้ผู้ใช้งาน`);
+
+  //     } else {
+  //       console.log(CreatedData);
+  //     }
+
+  //     setOpen(false);
+  //     // console.log("สร้างห้องสำเร็จ");
+  //     // console.log(CreatedData);
+  //     props.refreshData();
+  //     resetStates();
+  //   } catch (error) {
+  //     console.log("Error while Editing User Major", error);
+  //   }
+  // };
+
+  // const usercheck = async () => {
+  //   try {
+  //     const response = await fetch(`/api/dbuser/${teacherId}`, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+
+  //     if (!response.ok) {
+  //       // throw new Error('HTTP status ' + response.status);
+  //       if (response.status == 404) {
+  //         alert(`ไม่พบผู้ใช้งาน`);
+  //       } else {
+  //         alert(`ผิดพลาดในการเช็คข้อมูลผู้ใช้งาน`);
+  //       }
+  //     }
+
+  //     // ดึงข้อมูลที่สร้างเอกสารมาจาก response
+  //     const CreatedData = await response.json();
+
+  //     if (CreatedData.users.role === "teacher") {
+
+  //       if(CreatedData.users.major === null){
+  //         setTeacherData(CreatedData.users);
+  //         handleConfirm();
+  //       }
+  //       else{
+  //         alert("ผู้ใช้งานนี้สาขาวิชาอยู่แล้ว")
+  //       }
+        
+  //     } else {
+  //       alert("ผู้ใช้งานไม่ใช่อาจารย์");
+  //     }
+  //     setOpen(false);
+
+  //     // console.log("เช็คข้อมูลผู้ใช้งานสำเร็จ");
+  //     console.log(CreatedData.users);
+  //     props.refreshData();
+  //     resetStates();
+  //   } catch (error) {
+  //     console.log("Error while checking User", error);
+  //   }
+  // };
+
   const handleConfirm = async () => {
-
     try {
-
-      const response = await fetch(`/api/dbroom/`, {
+      // console.log(teacherData)
+      const response = await fetch(`/api/dbmajor/`, {
         method: "POST",
         body: JSON.stringify({
-          // userId: studentID,
-          roomId: roomId,
-          advisorId: teacherId,
-          advisorPrefix: prefix,
-          advisorName: firstName,
-          advisorLastName: lastName,
-          roomMajor: major,
-
+          majorId: majorId,
+          // headdepartmentId: teacherData.userId,
+          // headdepartmentPrefix: teacherData.prefix,
+          // headdepartmentName: teacherData.name,
+          // headdepartmentLastName: teacherData.lname,
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      if (!response.ok) {
-        // throw new Error('HTTP status ' + response.status);
-          alert(`ผิดพลาดระหว่างสร้างห้อง`);
-
-      }
-      else{
-        alert(`สร้างห้องสำเร็จ`);
-      }
-
       // ดึงข้อมูลที่สร้างเอกสารมาจาก response
       const CreatedData = await response.json();
+
+
+      if (!response.ok) {
+        // throw new Error('HTTP status ' + response.status);
+        if (response.status == 400) {
+          alert(`มีสาขาวิชานี้อยู่แล้ว`);
+        } else {
+          alert(`ผิดพลาดในการสร้างสาขา`);
+        }
+      } else {
+        console.log(CreatedData);
+      }
+
       setOpen(false);
       // console.log("สร้างห้องสำเร็จ");
       // console.log(CreatedData);
       props.refreshData();
       resetStates();
     } catch (error) {
-      console.log("Error while Creating Room", error);
+      console.log("Error while Creating Major", error);
     }
   };
 
   return (
     <>
       <button
-  type="button"
-  className="flex items-center justify-center rounded-md bg-green-500 px-2 py-2 md:mr-1 md:ml-1 hover:bg-green-400 h-10 text-white w-full md:w-auto "
-  onClick={() => {
-    setOpen(true);
-    // console.log(userData);
-  }}
->
+        type="button"
+        className="flex items-center justify-center rounded-md bg-green-500 px-2 py-2 md:mr-1 md:ml-1 hover:bg-green-400 h-10 text-white w-full md:w-auto "
+        onClick={() => {
+          setOpen(true);
+          // console.log(userData);
+        }}
+      >
         <svg
           className="w-5 h-5 text-white mr-1"
           aria-hidden="true"
@@ -127,7 +194,7 @@ export default function AddButton(props: any) {
             clipRule="evenodd"
           />
         </svg>
-        เพิ่มห้องเรียน
+        เพิ่มสาขาวิชา
       </button>
 
       <Transition.Root show={open} as={Fragment}>
@@ -177,44 +244,24 @@ export default function AddButton(props: any) {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          เพิ่มห้องเรียน
+                          เพิ่มสาขาวิชา
                         </Dialog.Title>
                         <div className="mt-2">
                           <div className="grid grid-cols-12 gap-2 items-center">
-           
-
                             <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              รหัสห้องเรียน :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="รหัสห้องเรียน"
-                                value={roomId}
-                                onChange={(e) => {
-                                  // Convert input to uppercase and remove special characters
-                                  const newValue = e.target.value.toUpperCase().replace(/[^A-Z0-9]/gi, '');
-                                  setRoomId(newValue);
-                              }}
-                              />
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              สาขาวิชา :
+                              ชื่อสาขาวิชา :
                             </p>
                             <p className="py-2 col-span-12 md:col-span-9">
                               <input
                                 type="text"
                                 className="border border-black rounded-md p-1 w-full disabled:bg-slate-200"
-                                placeholder="สาขาวิชา"
-                                value={major}
-                                disabled
-                                onChange={(e) => setMajor(e.target.value)}
+                                placeholder="ชื่อสาขาวิชา"
+                                value={majorId}
+                                onChange={(e) => setMajorId(e.target.value)}
                               />
                             </p>
 
-                            <p className="py-2 col-span-12">อาจารย์ที่ปรึกษา</p>
+                            {/* <p className="py-2 col-span-12">หัวหน้าสาขา</p>
 
                             <p className="py-2 col-span-12 md:col-span-3 md:text-right">
                               รหัสประจำตัว :
@@ -222,55 +269,20 @@ export default function AddButton(props: any) {
                             <p className="py-2 col-span-12 md:col-span-9">
                               <input
                                 type="text"
-                                className="border border-black rounded-md p-1 w-full disabled:bg-slate-200"
+                                className="border border-black rounded-md p-1 w-full"
                                 placeholder="รหัสประจำตัว"
                                 value={teacherId}
-                                disabled
-                                onChange={(e) => setTeacherId(e.target.value)}
+                                onChange={(e) => {
+                                  // Convert input to uppercase and remove special characters
+                                  const newValue = e.target.value
+                                    .toUpperCase()
+                                    .replace(/[^0-9]/gi, "");
+                                  setTeacherId(newValue);
+                                }}
                               />
-                            </p>
+                            </p> */}
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              คำนำหน้า :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full disabled:bg-slate-200"
-                                placeholder="คำนำหน้า"
-                                value={prefix}
-                                disabled
-                                onChange={(e) => setPrefix(e.target.value)}
-                              />
-                            </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              ชื่อ :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full disabled:bg-slate-200"
-                                placeholder="ชื่อ"
-                                value={firstName}
-                                disabled
-                                onChange={(e) => setFirstName(e.target.value)}
-                              />
-                            </p>
-
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              นามสกุล :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full disabled:bg-slate-200"
-                                placeholder="นามสกุล"
-                                value={lastName}
-                                disabled
-                                onChange={(e) => setLastName(e.target.value)}
-                              />
-                            </p>
 
                           </div>
                         </div>

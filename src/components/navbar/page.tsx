@@ -13,6 +13,7 @@ const navigation = [
   { name: "จัดการคำร้อง", href: "/managedocs", current: false },
   { name: "จัดการผู้ใช้งาน", href: "/manageusers", current: false },
   { name: "จัดการห้องเรียน", href: "/managerooms", current: false },
+  { name: "จัดการสาขา", href: "/managemajors", current: false },
   { name: "จัดการห้องเรียน(อาจารย์)", href: "/teachermanagerooms", current: false },
 ];
 
@@ -79,14 +80,14 @@ export default function Navbar() {
                   <div className="text-white hidden md:block">
                     Phuminan Ananthuk
                   </div>
-                  <button
+                  {/* <button
                     type="button"
                     className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                   >
                     <span className="absolute -inset-1.5" />
 
-                    {/* <BellIcon className="h-6 w-6" aria-hidden="true" /> */}
-                  </button>
+                    <BellIcon className="h-6 w-6" aria-hidden="true" />
+                  </button> */}
 
                   {/* Profile dropdown */}
                   <Menu as="div" className="relative ml-3">

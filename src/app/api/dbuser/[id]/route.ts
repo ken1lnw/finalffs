@@ -15,6 +15,10 @@ export async function GET(req:Request,{params}:any){
                 }
             }
         )
+        if (users === null) {
+            return NextResponse.json({ error: 'ERROR USER NOT FOUND' }, { status: 404 })
+        }
+
         return NextResponse.json({users}, { status: 200 })
         
     } catch (error) {
