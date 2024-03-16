@@ -20,7 +20,7 @@ model User {
   faculty     String?
   programs    String?
   major       String?
-  room        String[]
+  // room        String[]
   role        String?
   signPath    String?
   admin       Boolean  @default(false)
@@ -77,7 +77,7 @@ model Major {
   headdepartmentPrefix String?
   headdepartmentName String?
   headdepartmentLastName String?
-  users String[] // เก็บ User ทุก Role
+  // users String[] // เก็บ User ทุก Role
 }
 
 

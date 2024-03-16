@@ -18,6 +18,8 @@ export default function AddButton(props: any) {
   const [isLoading, setLoading] = useState(true);
   const roomData = props.roomId;
 
+  const roomMajorData = props.roomMajorData;
+
   const validateForm = () => {
     // Perform validation for each input field
     const isValid =
@@ -33,60 +35,188 @@ export default function AddButton(props: any) {
 
   };
 
-  const handleSubmit = async () => {
-    if (validateForm()) {
-      const userData = await usercheck();
-      if (userData && Object.keys(userData).length > 0) {
-        handleConfirm();
-      } else {
-        console.log("error no user found");
-      }
-    } else {
-      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
-    }
-  };
+  // const handleSubmit = async () => {
+  //   if (validateForm()) {
+  //     const userData = await usercheck();
+  //     if (userData && Object.keys(userData).length > 0) {
+  //       handleConfirm();
+  //     } else {
+  //       console.log("error no user found");
+  //     }
+  //   } else {
+  //     alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+  //   }
+  // };
   
+  // // const usercheck = async () => {
+  // //   let userData = null;
+  // //   await fetch(`/api/dbuser/${studentId}`)
+  // //     .then((res) => res.json())
+  // //     .then((data) => {
+  // //       if (data.users && Object.keys(data.users).length > 0) {
+  // //         console.log(data);
+  // //         userData = data;
+  // //       } else {
+  // //         console.log("error set Docs data");
+  // //       }
+  // //       setLoading(false);
+  // //     });
+  // //   return userData;
+  // // };
+
   // const usercheck = async () => {
   //   let userData = null;
   //   await fetch(`/api/dbuser/${studentId}`)
   //     .then((res) => res.json())
   //     .then((data) => {
   //       if (data.users && Object.keys(data.users).length > 0) {
-  //         console.log(data);
-  //         userData = data;
+  //         // Check if the user already has a room
+  //         console.log("ถึง data.users && Object.keys(data.users)");
+
+  //         if (data.users.room && data.users.room.length == 0) {
+  //           console.log("error: user already has room");
+  //         } else {
+  //           console.log(data);
+  //           userData = data;
+  //         }
   //       } else {
-  //         console.log("error set Docs data");
+  //         console.log("error set Users data");
   //       }
   //       setLoading(false);
   //     });
   //   return userData;
   // };
+  
+  
+  
+
+
+  // const handleConfirm = async () => {
+  //   try {
+  //     const response = await fetch(`/api/dbroom/userinroom/edit/${roomData}`, {
+  //       method: "PUT",
+  //       body: JSON.stringify({
+  //         student: [studentId]
+
+  //       }),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+
+  //     // ดึงข้อมูลที่สร้างเอกสารมาจาก response
+  //     const CreatedData = await response.json();
+  //     setOpen(false);
+  //     console.log("เพิ่มนักศึกษาสำเร็จ");
+  //     console.log(CreatedData);
+  //     props.refreshData();
+  //     resetStates();
+  //   } catch (error) {
+  //     console.log("Error while Adding Student", error);
+  //   }
+  // };
+
+
+
+  
+  const handleSubmit = async () => {
+    if (validateForm()) {
+      const userData = await usercheck();
+      // const roomData = await roomcheck();
+      if (userData && Object.keys(userData).length > 0) {
+
+        const roomData = await roomcheck();
+        if (roomData && Object.keys(roomData).length > 0) 
+        {
+          handleConfirm();
+        }
+
+   
+      } 
+
+      // if (userData && Object.keys(userData).length > 0 && roomData && Object.keys(roomData).length > 0) {
+      //   handleConfirm();
+
+
+      // } else {
+      //   // console.log("error no user found or user already has room ");
+      //   // alert("ผู้ใช้งานมีห้องอยู่แล้ว");
+      // }
+
+
+
+    } else {
+      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+    }
+  };
+
+
 
   const usercheck = async () => {
     let userData = null;
     await fetch(`/api/dbuser/${studentId}`)
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
+        console.log(roomMajorData);
         if (data.users && Object.keys(data.users).length > 0) {
           // Check if the user already has a room
-          console.log("ถึง data.users && Object.keys(data.users)");
+          // console.log("ถึง data.users && Object.keys(data.users)");
 
-          if (data.users.room && data.users.room.length == 0) {
-            console.log("error: user already has room");
+          if (data.users.major == roomMajorData) {
+            // console.log(data);
+            
+
+            if (data.users.role === 'student'){
+              userData = data;
+            }
+            else{
+              console.log("error: user not student");
+
+              alert("ผู้ใช้งานไม่ใช่นักศึกษา");
+
+            }
+
+
+
           } else {
-            console.log(data);
-            userData = data;
+            console.log("error: user not the same major");
+            alert("ผู้ใช้งานไม่ใช่นักศึกษาภายในสาขาวิชา");
           }
+
+
+
         } else {
           console.log("error set Users data");
+          alert("ไม่พบผู้ใช้งาน");
         }
         setLoading(false);
       });
     return userData;
   };
-  
-  
-  
+
+
+  const roomcheck = async () => {
+    let roomData = null;
+    await fetch(`/api/dbroom/findroomforstudent/${studentId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data)
+        if (data.rooms && Object.keys(data.rooms).length == 0) {
+          // if (data.rooms && Array.isArray(data.rooms) && data.rooms.length > 0 && data.rooms[0].roomId) {
+
+          // Check if the user already has a room
+          // console.log("ถึง data.users && Object.keys(data.users)");
+          roomData = data;
+
+        } else {
+          console.log("error user already has room");
+          alert(`ผู้ใช้งานมีห้องอยู่แล้ว ห้อง ${data.rooms[0].roomId}`);
+        }
+        setLoading(false);
+      });
+    return roomData;
+  };
 
 
   const handleConfirm = async () => {
@@ -94,18 +224,26 @@ export default function AddButton(props: any) {
       const response = await fetch(`/api/dbroom/userinroom/edit/${roomData}`, {
         method: "PUT",
         body: JSON.stringify({
-          student: [studentId]
-
+          student: [studentId],
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
 
+      if (!response.ok) {
+        // throw new Error('HTTP status ' + response.status);
+        if (response.status == 400) {
+          alert(`ผู้ใช้งานนี้อยู่ภายในห้องนี้แล้ว`);
+        } else {
+          alert(`ผิดพลาด`);
+        }
+      }
       // ดึงข้อมูลที่สร้างเอกสารมาจาก response
       const CreatedData = await response.json();
       setOpen(false);
       console.log("เพิ่มนักศึกษาสำเร็จ");
+       alert("เพิ่มนักศึกษาสำเร็จ");
       console.log(CreatedData);
       props.refreshData();
       resetStates();
@@ -113,6 +251,7 @@ export default function AddButton(props: any) {
       console.log("Error while Adding Student", error);
     }
   };
+
 
   useEffect(() => {
   console.log(roomData)

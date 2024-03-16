@@ -35,16 +35,35 @@ export default function AddButton(props: any) {
   const handleSubmit = async () => {
     if (validateForm()) {
       const userData = await usercheck();
+      // const roomData = await roomcheck();
       if (userData && Object.keys(userData).length > 0) {
-        handleConfirm();
-      } else {
-        console.log("error no user found");
-        // alert("ผู้ใช้งานมีห้องอยู่แล้ว");
-      }
+
+        const roomData = await roomcheck();
+        if (roomData && Object.keys(roomData).length > 0) 
+        {
+          handleConfirm();
+        }
+
+   
+      } 
+
+      // if (userData && Object.keys(userData).length > 0 && roomData && Object.keys(roomData).length > 0) {
+      //   handleConfirm();
+
+
+      // } else {
+      //   // console.log("error no user found or user already has room ");
+      //   // alert("ผู้ใช้งานมีห้องอยู่แล้ว");
+      // }
+
+
+
     } else {
       alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
     }
   };
+
+
 
   const usercheck = async () => {
     let userData = null;
@@ -55,18 +74,29 @@ export default function AddButton(props: any) {
           // Check if the user already has a room
           // console.log("ถึง data.users && Object.keys(data.users)");
 
-          if (data.users.room && data.users.room.length == 0) {
-            if (data.users.major == roomMajorData) {
-              console.log(data);
+          if (data.users.major == roomMajorData) {
+            // console.log(data);
+            
+
+            if (data.users.role === 'student'){
               userData = data;
-            } else {
-              console.log("error: user not the same major");
-              alert("ผู้ใช้งานไม่ใช่นักศึกษาภายในสาขาวิชา");
             }
+            else{
+              console.log("error: user not student");
+
+              alert("ผู้ใช้งานไม่ใช่นักศึกษา");
+
+            }
+
+
+
           } else {
-            console.log("error: user already has room");
-            alert("ผู้ใช้งานมีห้องอยู่แล้ว");
+            console.log("error: user not the same major");
+            alert("ผู้ใช้งานไม่ใช่นักศึกษาภายในสาขาวิชา");
           }
+
+
+
         } else {
           console.log("error set Users data");
           alert("ไม่พบผู้ใช้งาน");
@@ -75,6 +105,30 @@ export default function AddButton(props: any) {
       });
     return userData;
   };
+
+
+  const roomcheck = async () => {
+    let roomData = null;
+    await fetch(`/api/dbroom/findroomforstudent/${studentId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data)
+        if (data.rooms && Object.keys(data.rooms).length == 0) {
+          // if (data.rooms && Array.isArray(data.rooms) && data.rooms.length > 0 && data.rooms[0].roomId) {
+
+          // Check if the user already has a room
+          // console.log("ถึง data.users && Object.keys(data.users)");
+          roomData = data;
+
+        } else {
+          console.log("error user already has room");
+          alert(`ผู้ใช้งานมีห้องอยู่แล้ว ห้อง ${data.rooms[0].roomId}`);
+        }
+        setLoading(false);
+      });
+    return roomData;
+  };
+
 
   const handleConfirm = async () => {
     try {
