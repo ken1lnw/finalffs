@@ -81,3 +81,17 @@ model Major {
 }
 
 
+model RoomReqeust {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  status String?
+  roomId        String?
+  roomAdvisorId String?
+  roomMajor String?
+  requesterId String?
+  requesterPrefix String?
+  requesterName String?
+  requesterLastName String?
+  requesterMajor String?
+
+}
+

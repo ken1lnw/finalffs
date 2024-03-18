@@ -3,45 +3,39 @@ import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
-export default function DeleteButton(props:any) {
+export default function DeleteButton(props: any) {
+
+  const requestId = props.requestId;
+
   const [open, setOpen] = useState(false);
 
   const cancelButtonRef = useRef(null);
 
   const handlePrint = async () => {
-
     try {
-      const deleteuser = await fetch(`/api/dbroom/userinroom/edit/${props.roomId}`, {
-          method: "DELETE",
-          body: JSON.stringify({
-            student: props.studentId
-          }),
-          headers: {
-              "Content-Type": "application/json",
-          },
+      const deleteRequest = await fetch(`/api/dbroom/request/${requestId}`, {
+        method: "DELETE",
+        body: JSON.stringify({}),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      if (deleteuser.ok) {
-          // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
-          console.log("UserinRoom Deleted successfully")
-          
+      if (deleteRequest.ok) {
+        // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
+        alert("สำเร็จ");
+        // console.log("Room Deleted successfully");
       } else {
-          // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
-          console.error("UserinRoom Delete request failed");
+        // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
+        alert("ไม่สำเร็จ");
+        console.error("Room Delete request failed");
       }
       props.refreshData();
-      props.refreshmain();
       setOpen(false);
-  } catch (error) {
+    } catch (error) {
       // ทำอะไรสักอย่างเมื่อเกิดข้อผิดพลาดในการ fetch
       console.error("Error occurred while deleting Room", error);
-  }
-
-
-
- 
-  
-
+    }
   };
 
   return (
@@ -55,10 +49,18 @@ export default function DeleteButton(props:any) {
           className="w-5 h-5 text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 18 20"
+          width="24"
+          height="24"
+          fill="none"
+          viewBox="0 0 24 24"
         >
-          <path d="M17 4h-4V2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v2H1a1 1 0 0 0 0 2h1v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1a1 1 0 1 0 0-2ZM7 2h4v2H7V2Zm1 14a1 1 0 1 1-2 0V8a1 1 0 0 1 2 0v8Zm4 0a1 1 0 0 1-2 0V8a1 1 0 0 1 2 0v8Z" />
+          <path
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M6 18 17.94 6M18 18 6.06 6"
+          />
         </svg>
       </button>
 
@@ -110,7 +112,7 @@ export default function DeleteButton(props:any) {
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">
-                            กรุณาตรวจสอบให้แน่ใจว่าต้องการลบนักศึกษา เนื่องจากจะไม่สามารถกู้คืนนักศึกษาที่ลบไปแล้วได้
+                            กรุณาตรวจสอบให้แน่ใจว่าต้องการ &quot;ไม่อนุมัติ&quot; ผู้ใช้งานท่านนี้เข้าสู่ห้องเรียน
                           </p>
                         </div>
                       </div>

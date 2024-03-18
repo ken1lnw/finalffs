@@ -3,63 +3,103 @@ import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
-export default function DeleteButton(props:any) {
+export default function AddButton(props: any) {
   const [open, setOpen] = useState(false);
 
+  // const [educationLevel, setEducationLevel] = useState("");
+  // const [faculty, setFaculty] = useState("");
+
   const cancelButtonRef = useRef(null);
-
-  const handlePrint = async () => {
-
-    try {
-      const deleteuser = await fetch(`/api/dbroom/userinroom/edit/${props.roomId}`, {
-          method: "DELETE",
-          body: JSON.stringify({
-            student: props.studentId
-          }),
-          headers: {
-              "Content-Type": "application/json",
-          },
-      });
-
-      if (deleteuser.ok) {
-          // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
-          console.log("UserinRoom Deleted successfully")
-          
-      } else {
-          // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
-          console.error("UserinRoom Delete request failed");
-      }
-      props.refreshData();
-      props.refreshmain();
-      setOpen(false);
-  } catch (error) {
-      // ทำอะไรสักอย่างเมื่อเกิดข้อผิดพลาดในการ fetch
-      console.error("Error occurred while deleting Room", error);
-  }
+  const userData = props.UserData;
+  const roomIdData = props.roomId;
+  const roomAdvisorIdData = props.roomAdvisorId;
+  const roomMajorData = props.roomMajor;
 
 
+  const [roomId, setRoomId] = useState("");
+  const [major, setMajor] = useState("");
+  const [teacherId, setTeacherId] = useState("");
+  const [prefix, setPrefix] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [formValid, setFormValid] = useState(false);
 
- 
+
   
 
+  const handleConfirm = async () => {
+    try {
+      console.log(userData);
+      const response = await fetch(`/api/dbroom/request`, {
+        method: "POST",
+        body: JSON.stringify({
+          // userId: studentID,
+          status: "รอการอนุมัติ",
+          roomId: roomIdData,
+          roomAdvisorId: roomAdvisorIdData,
+          roomMajor: roomMajorData,
+          requesterId: userData.userId,
+          requesterPrefix: userData.prefix,
+          requesterName: userData.name,
+          requesterLastName: userData.lname,
+          requesterMajor: userData.major,
+
+          // id String @id @default(auto()) @map("_id") @db.ObjectId
+          // status String?
+          // roomId        String?
+          // requesterId String?
+          // requesterPrefix String?
+          // requesterName String?
+          // requesterLastName String?
+          // requesterMajor String?
+
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        // throw new Error('HTTP status ' + response.status);
+          alert(`ผิดพลาดระหว่างส่งคำขอสมัครเข้าห้องเรียน`);
+
+      }
+      else{
+        alert(`ส่งคำขอสมัครเข้าห้องเรียนสำเร็จ`);
+      }
+
+      // ดึงข้อมูลที่สร้างเอกสารมาจาก response
+      const CreatedData = await response.json();
+      setOpen(false);
+      // console.log("สร้างห้องสำเร็จ");
+      console.log(CreatedData);
+      props.refreshData();
+    } catch (error) {
+      console.log("Error while Requesting enter Room", error);
+    }
   };
 
   return (
     <>
       <button
         type="button"
-        className=" justify-center rounded-md bg-red-500 px-2 py-2 mr-1  hover:bg-red-400"
+        className="flex items-center justify-center rounded-md bg-green-500 px-2 py-2 md:mr-1 md:ml-1 hover:bg-green-400 h-10 text-white w-full md:w-auto "
         onClick={() => setOpen(true)} // Set open state to true when button is clicked
       >
         <svg
-          className="w-5 h-5 text-white"
+          className="w-5 h-5 text-white mr-1"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="currentColor"
-          viewBox="0 0 18 20"
+          viewBox="0 0 24 24"
         >
-          <path d="M17 4h-4V2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v2H1a1 1 0 0 0 0 2h1v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1a1 1 0 1 0 0-2ZM7 2h4v2H7V2Zm1 14a1 1 0 1 1-2 0V8a1 1 0 0 1 2 0v8Zm4 0a1 1 0 0 1-2 0V8a1 1 0 0 1 2 0v8Z" />
+          <path
+            fillRule="evenodd"
+            d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Zm11-4.2a1 1 0 1 0-2 0V11H7.8a1 1 0 1 0 0 2H11v3.2a1 1 0 1 0 2 0V13h3.2a1 1 0 1 0 0-2H13V7.8Z"
+            clipRule="evenodd"
+          />
         </svg>
+        สมัครเข้าห้องเรียน
       </button>
 
       <Transition.Root show={open} as={Fragment}>
@@ -110,7 +150,7 @@ export default function DeleteButton(props:any) {
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">
-                            กรุณาตรวจสอบให้แน่ใจว่าต้องการลบนักศึกษา เนื่องจากจะไม่สามารถกู้คืนนักศึกษาที่ลบไปแล้วได้
+                            กรุณาตรวจสอบให้แน่ใจว่าคุณต้องการสมัครเข้าห้องเรียน
                           </p>
                         </div>
                       </div>
@@ -119,10 +159,10 @@ export default function DeleteButton(props:any) {
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
                       type="button"
-                      className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                      onClick={handlePrint}
+                      className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
+                      onClick={handleConfirm}
                     >
-                      ลบ
+                      สมัคร
                     </button>
                     <button
                       type="button"

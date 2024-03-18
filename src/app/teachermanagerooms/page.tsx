@@ -9,8 +9,14 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 
 import { useState, useEffect } from "react";
 import StudentEditButton from "./studenteditbutton/page";
+import RoomRequestTable from "./roomrequesttable/page";
 
 export default function ManageRooms() {
+
+  const id = "61221645656";
+
+  const [roomData, setRoomData] = useState<any>(null);
+
   const [data, setData] = useState<any>(null);
   const [userdata, setUserData] = useState<any>(null);
   const [isLoading, setLoading] = useState(true);
@@ -26,7 +32,7 @@ export default function ManageRooms() {
 
   const userid = async () => {
     try {
-        const res = await fetch("/api/dbuser/61221645656");
+        const res = await fetch(`/api/dbuser/${id}`);
         const data2 = await res.json();
         setUserData(data2.users);
         if (data2) {
@@ -41,13 +47,33 @@ export default function ManageRooms() {
     }
 };
 
+const roomFetch = () => {
+  fetch(`/api/dbroom/request`)
+    .then((res) => res.json())
+    .then((data) => {
+      // setData(data);
+      if(data){
+        console.log(data.request);
+        setRoomData(data.request);
+      }
+      else{
+        console.log("error fetch roomRequest data");
+      }
+      
+
+
+      setLoading(false);
+    });
+};
+
 
   const refreshData = () => {
-    fetch("/api/dbroom/teacherroom/61221645656")
+    fetch(`/api/dbroom/teacherroom/${id}`)
       .then((res) => res.json())
-      .then((data) => {
+      .then(async (data) => {
         setData(data);
         if (data) {
+          await roomFetch();
           console.log(data);
         } else {
           console.log("error set Rooms data");
@@ -60,6 +86,7 @@ export default function ManageRooms() {
   useEffect(() => {
     // refreshData();
     userid();
+    
   }, []);
 
   const handlePreviousPage = () => {
@@ -243,6 +270,16 @@ export default function ManageRooms() {
           </div>
         </div>
       </div>
+
+      { 
+        (roomData && roomData.filter((item:any) => item.status === "รอการอนุมัติ" && item.roomAdvisorId === id).length > 0 ? 
+        <RoomRequestTable refreshData={refreshData} requestData={roomData.filter((item:any) => item.status === "รอการอนุมัติ" && item.roomAdvisorId === id)} /> : 
+        <div className="mx-auto container text-xl">
+ไม่มีคำร้องสมัครเข้าห้องเรียน
+        </div>
+        
+        ) 
+        }
     </>
   );
 }

@@ -1,39 +1,27 @@
 "use client";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 export default function AddButton(props: any) {
+  const requesterId = props.requesterId;
+  const roomMajorData = props.roomMajor;
+  const roomIdData = props.roomId;
+  const idRequest = props.idRequest;
+
+
+  const [isLoading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
 
-  // const [educationLevel, setEducationLevel] = useState("");
-  // const [faculty, setFaculty] = useState("");
-
   const cancelButtonRef = useRef(null);
-  const userData = props.user;
-  const [studentId, setStudentId] = useState("");
 
-  const [formValid, setFormValid] = useState(false);
-  const [data, setData] = useState<any>(null);
-  const [isLoading, setLoading] = useState(true);
-  const roomData = props.roomId;
-  const roomMajorData = props.roomMajor;
 
-  const validateForm = () => {
-    // Perform validation for each input field
-    const isValid = studentId !== "";
 
-    setFormValid(isValid);
 
-    return isValid;
-  };
 
-  const resetStates = () => {
-    setStudentId("");
-  };
 
   const handleSubmit = async () => {
-    if (validateForm()) {
+  
       const userData = await usercheck();
       // const roomData = await roomcheck();
       if (userData && Object.keys(userData).length > 0) {
@@ -47,27 +35,14 @@ export default function AddButton(props: any) {
    
       } 
 
-      // if (userData && Object.keys(userData).length > 0 && roomData && Object.keys(roomData).length > 0) {
-      //   handleConfirm();
 
-
-      // } else {
-      //   // console.log("error no user found or user already has room ");
-      //   // alert("ผู้ใช้งานมีห้องอยู่แล้ว");
-      // }
-
-
-
-    } else {
-      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
-    }
   };
 
 
 
   const usercheck = async () => {
     let userData = null;
-    await fetch(`/api/dbuser/${studentId}`)
+    await fetch(`/api/dbuser/${requesterId}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.users && Object.keys(data.users).length > 0) {
@@ -109,7 +84,7 @@ export default function AddButton(props: any) {
 
   const roomcheck = async () => {
     let roomData = null;
-    await fetch(`/api/dbroom/findroomforstudent/${studentId}`)
+    await fetch(`/api/dbroom/findroomforstudent/${requesterId}`)
       .then((res) => res.json())
       .then((data) => {
         console.log(data)
@@ -130,12 +105,45 @@ export default function AddButton(props: any) {
   };
 
 
+
+  const handleDelete = async () => {
+    try {
+      const deleteRequest = await fetch(`/api/dbroom/request/${idRequest}`, {
+        method: "DELETE",
+        body: JSON.stringify({}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (deleteRequest.ok) {
+        // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
+        // alert("สำเร็จ");
+        // console.log("Room Deleted successfully");
+      } else {
+        // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
+        alert("ลบคำร้องไม่สำเร็จ");
+        console.error("Room Delete request failed");
+      }
+      // props.refreshData();
+      // setOpen(false);
+    } catch (error) {
+      // ทำอะไรสักอย่างเมื่อเกิดข้อผิดพลาดในการ fetch
+      console.error("Error occurred while deleting Room Request", error);
+    }
+  };
+
+
+
+
+
+
   const handleConfirm = async () => {
     try {
-      const response = await fetch(`/api/dbroom/userinroom/edit/${roomData}`, {
+      const response = await fetch(`/api/dbroom/userinroom/edit/${roomIdData}`, {
         method: "PUT",
         body: JSON.stringify({
-          student: [studentId],
+          student: [requesterId],
         }),
         headers: {
           "Content-Type": "application/json",
@@ -150,6 +158,8 @@ export default function AddButton(props: any) {
           alert(`ผิดพลาด`);
         }
       }
+
+      await handleDelete();
       // ดึงข้อมูลที่สร้างเอกสารมาจาก response
       const CreatedData = await response.json();
       setOpen(false);
@@ -157,37 +167,35 @@ export default function AddButton(props: any) {
        alert("เพิ่มนักศึกษาสำเร็จ");
       console.log(CreatedData);
       props.refreshData();
-      resetStates();
     } catch (error) {
       console.log("Error while Adding Student", error);
     }
   };
 
-  useEffect(() => {
-    // console.log(roomMajorData);
-  }, []);
-
   return (
     <>
       <button
         type="button"
-        className="flex items-center justify-center rounded-md bg-green-500 px-2 py-2 md:mr-1 md:ml-1 hover:bg-green-400 h-10 text-white w-full md:w-auto "
+        className=" justify-center rounded-md bg-green-500 px-2 py-2 mr-1  hover:bg-green-400"
         onClick={() => setOpen(true)} // Set open state to true when button is clicked
       >
         <svg
           className="w-5 h-5 text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
+          width="24"
+          height="24"
+          fill="none"
           viewBox="0 0 24 24"
         >
           <path
-            fillRule="evenodd"
-            d="M9 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H7Zm8-1c0-.6.4-1 1-1h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 0 1-1-1Z"
-            clipRule="evenodd"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M5 11.917 9.724 16.5 19 7.5"
           />
         </svg>
-        เพิ่มนักศึกษา
       </button>
 
       <Transition.Root show={open} as={Fragment}>
@@ -195,10 +203,7 @@ export default function AddButton(props: any) {
           as="div"
           className="relative z-10"
           initialFocus={cancelButtonRef}
-          onClose={() => {
-            setOpen(false);
-            resetStates(); // Reset states when closing dialog
-          }}
+          onClose={setOpen}
         >
           <Transition.Child
             as={Fragment}
@@ -213,7 +218,7 @@ export default function AddButton(props: any) {
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div className="md:flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -225,41 +230,24 @@ export default function AddButton(props: any) {
               >
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                    <div className="">
-                      {/* <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                         <ExclamationTriangleIcon
                           className="h-6 w-6 text-red-600"
                           aria-hidden="true"
                         />
-                      </div> */}
-                      <div className="mt-3 text-center sm:mt-0 sm:text-left">
+                      </div>
+                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                         <Dialog.Title
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          เพิ่มนักศึกษา
+                          คุณแน่ใจหรือไม่
                         </Dialog.Title>
                         <div className="mt-2">
-                          <div className="grid grid-cols-12 gap-2 items-center">
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
-                              รหัสนักศึกษา :
-                            </p>
-                            <p className="py-2 col-span-12 md:col-span-9">
-                              <input
-                                type="text"
-                                className="border border-black rounded-md p-1 w-full"
-                                placeholder="รหัสนักศึกษา"
-                                value={studentId}
-                                onChange={(e) => {
-                                  // Convert input to uppercase and remove special characters
-                                  const newValue = e.target.value
-                                    .toUpperCase()
-                                    .replace(/[^0-9]/gi, "");
-                                  setStudentId(newValue);
-                                }}
-                              />
-                            </p>
-                          </div>
+                          <p className="text-sm text-gray-500">
+                            กรุณาตรวจสอบให้แน่ใจว่าต้องการ &quot;อนุมัติ&quot; ผู้ใช้งานท่านนี้เข้าสู่ห้องเรียน
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -268,20 +256,14 @@ export default function AddButton(props: any) {
                     <button
                       type="button"
                       className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
-                      onClick={() => {
-                        // setOpen(false);
-                        handleSubmit();
-                      }}
+                      onClick={handleSubmit}
                     >
-                      สร้าง
+                      อนุมัติ
                     </button>
                     <button
                       type="button"
                       className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                      onClick={() => {
-                        setOpen(false);
-                        resetStates();
-                      }}
+                      onClick={() => setOpen(false)}
                       ref={cancelButtonRef}
                     >
                       ยกเลิก

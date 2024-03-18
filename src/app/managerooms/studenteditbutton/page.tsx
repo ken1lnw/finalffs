@@ -140,7 +140,7 @@ export default function StudentEditButton(props: any) {
                         </div>
                       </div>
                     </div>
-                    <StudentTable students={roomData?.student} roomData={roomData} roomId={roomData?.roomId}/>
+                    <StudentTable students={roomData?.student} roomData={roomData} roomId={roomData?.roomId} refreshmain={props.refreshData}/>
                   </div>
 
 

@@ -9,9 +9,12 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 
 import { useState, useEffect } from "react";
 import StudentEditButton from "./studenteditbutton/page";
+import RoomRequestTable from "./roomrequesttable/page";
 
 export default function ManageRooms() {
   const [data, setData] = useState<any>(null);
+  const [roomData, setRoomData] = useState<any>(null);
+
   const [isLoading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,12 +26,51 @@ export default function ManageRooms() {
     setSearchTerm(event.target.value);
   };
 
+  // const refreshData = () => {
+  //   fetch("/api/dbroom")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setData(data);
+  //       if (data) {
+  //         console.log(data);
+  //         // setRoomData(data.request);
+
+  //       } else {
+  //         console.log("error set Rooms data");
+  //       }
+  //       setLoading(false);
+  //     });
+  // };
+
+
+  
+const roomFetch = () => {
+  fetch(`/api/dbroom/request`)
+    .then((res) => res.json())
+    .then((data) => {
+      // setData(data);
+      if(data){
+        console.log(data.request);
+        setRoomData(data.request);
+      }
+      else{
+        console.log("error fetch roomRequest data");
+      }
+      
+
+
+      setLoading(false);
+    });
+};
+
+
   const refreshData = () => {
-    fetch("/api/dbroom")
+    fetch(`/api/dbroom/`)
       .then((res) => res.json())
-      .then((data) => {
+      .then(async (data) => {
         setData(data);
         if (data) {
+          await roomFetch();
           console.log(data);
         } else {
           console.log("error set Rooms data");
@@ -138,7 +180,7 @@ export default function ManageRooms() {
                         <EditButton room={item} 
                         refreshData={refreshData}/>
 
-                        <StudentEditButton room={item} />
+                        <StudentEditButton room={item} refreshData={refreshData} />
 
                         <DeleteButton
                           roomId={item.roomId}
@@ -223,6 +265,17 @@ export default function ManageRooms() {
           </div>
         </div>
       </div>
+
+
+      { 
+        (roomData && roomData.length > 0 ? 
+        <RoomRequestTable refreshData={refreshData} requestData={roomData} /> : 
+        <div className="mx-auto container text-xl">
+ไม่มีคำร้องสมัครเข้าห้องเรียน
+        </div>
+        
+        ) 
+        }
     </>
   );
 }

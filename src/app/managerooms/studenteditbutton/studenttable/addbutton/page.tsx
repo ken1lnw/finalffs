@@ -158,12 +158,12 @@ export default function AddButton(props: any) {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        console.log(roomMajorData);
+        console.log(roomMajorData.roomMajor);
         if (data.users && Object.keys(data.users).length > 0) {
           // Check if the user already has a room
           // console.log("ถึง data.users && Object.keys(data.users)");
 
-          if (data.users.major == roomMajorData) {
+          if (data.users.major == roomMajorData.roomMajor) {
             // console.log(data);
             
 
@@ -246,6 +246,7 @@ export default function AddButton(props: any) {
        alert("เพิ่มนักศึกษาสำเร็จ");
       console.log(CreatedData);
       props.refreshData();
+      props.refreshmain();
       resetStates();
     } catch (error) {
       console.log("Error while Adding Student", error);

@@ -15,6 +15,7 @@ const navigation = [
   { name: "จัดการห้องเรียน", href: "/managerooms", current: false },
   { name: "จัดการสาขา", href: "/managemajors", current: false },
   { name: "จัดการห้องเรียน(อาจารย์)", href: "/teachermanagerooms", current: false },
+  { name: "สมัครเข้าห้องเรียน", href: "/roomregis", current: false },
 ];
 
 function classNames(...classes: any) {

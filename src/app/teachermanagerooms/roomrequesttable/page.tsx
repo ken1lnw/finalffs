@@ -1,5 +1,6 @@
 "use client";
-// import DeleteButton from "./deletebutton/page";
+import AddButton from "./addbutton/page";
+import DeleteButton from "./deletebutton/page";
 // import DetailButton from "./detailbutton/page";
 // import EditButton from "./editbutton/page";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
@@ -7,72 +8,25 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 // import PrintButton from "./printbutton/page";
 
 import { useState, useEffect } from "react";
-import DeleteButton from "./deletebutton/page";
-import AddButton from "./addbutton/page";
+// import StudentEditButton from "./studenteditbutton/page";
 
-export default function StudentTable(props: any) {
+export default function RoomRequestTable(props: any) {
+  const requestData = props.requestData;
+  const UserData = props.userData;
   const [data, setData] = useState<any>(null);
+  // const [userdata, setUserData] = useState<any>(null);
   const [isLoading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // จำนวนรายการต่อหน้า
-  const totalItems = data ? data.users.length : 0; // จำนวนรายการทั้งหมด
+  const totalItems = requestData && requestData ? requestData.length : 0; // จำนวนรายการทั้งหมด
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const roomData = props.roomId;
-  // const roomMajorData = props.roomData.roomMajor;
-  const roomMajorData = props.roomData;
-  const studentsData = props.students;
-
-
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const refreshData = () => {
-    fetch(`/api/dbroom/${roomData}`)
-    .then((res) => res.json())
-    .then((data) => {
-      // setData(data);
-      if (data) {
-        console.log(data);
 
-        fetch("/api/dbroom/student",{
-          method: "POST", // หรือ PUT หรือเมธอดอื่นๆ ตามที่ API ของคุณกำหนด
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            students: data?.rooms?.student // ส่งข้อมูลจาก roomData.students
-          })
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            setData(data);
-            if (data) {
-              console.log(data);
-            } else {
-              console.log("error set Students data");
-            }
-          });
-
-
-      } else {
-        console.log("error set Rooms data");
-      }
-      setLoading(false);
-    });
-
-
-    
-  };
-
-  // Call refreshData in useEffect
-  useEffect(() => {
-    refreshData();
-    // console.log(studentsData);
-  }, []);
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -87,19 +41,14 @@ export default function StudentTable(props: any) {
   };
 
   const filteredData =
-    data?.users?.filter((item: any) => {
+    requestData?.filter((item: any) => {
       const keys = [
-        "userId",
-        "prefix",
-        "name",
-        "lname",
-        "faculty",
-        "programs",
-        "major",
-        "room",
-        "role",
-        "admin",
-
+        "roomId",
+        "requesterId",
+        "requesterPrefix",
+        "requesterName",
+        "requesterLastName",
+        "requesterMajor",
       ];
       return keys.some((key) =>
         item[key]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -112,6 +61,11 @@ export default function StudentTable(props: any) {
   return (
     <>
       <div className="overflow-x-auto mb-10">
+        <div className="mx-auto container text-2xl">
+          คำร้องขอสมัครเข้าห้องเรียน
+          </div>
+
+
         <div className="pt-4 relative mx-auto text-black container block md:flex md:items-center">
           <input
             className="border-2 border-gray-500 bg-white h-10 px-5 mb-2 md:mb-0 rounded-lg text-sm focus:outline-none w-full md:w-1/4"
@@ -121,9 +75,7 @@ export default function StudentTable(props: any) {
             value={searchTerm}
             onChange={handleSearchChange}
           />
-          <button type="submit" className="absolute right-0 top-0"></button>
-
-          <AddButton roomId={roomData} refreshData={refreshData} roomMajorData={roomMajorData} refreshmain={props.refreshmain}/>    
+          {/* <AddButton userData={userdata} refreshData={refreshData}/>           */}
         </div>
 
         <div className="bg-white mx-auto container pt-4">
@@ -131,13 +83,14 @@ export default function StudentTable(props: any) {
             <table className="table-auto w-full ">
               <thead className="border-b">
                 <tr className="bg-blue-400">
-                  <th className="text-left p-4 font-medium">รหัสประจำตัว</th>
-                  <th className="text-left p-4 font-medium">คำนำหน้า</th>
+                  <th className="text-left p-4 font-medium">
+                    ห้องเรียนที่ยื่นสมัคร
+                  </th>
+                  <th className="text-left p-4 font-medium">รหัสนักศึกษา</th>
                   <th className="text-left p-4 font-medium">ชื่อ</th>
-                  <th className="text-left p-4 font-medium">นามสกุล</th>
+                  <th className="text-left p-4 font-medium">สาขาวิชา</th>
+
                   <th className="text-left p-4 font-medium">จัดการ</th>
-
-
                 </tr>
               </thead>
               <tbody>
@@ -148,13 +101,40 @@ export default function StudentTable(props: any) {
                   )
                   .map((item: any, index: number) => (
                     <tr key={index} className="border-b hover:bg-gray-50">
-                      <td className="p-4">{item.userId || "ไม่มีข้อมูล"}</td>
-                      <td className="p-4">{item.prefix || "ไม่มีข้อมูล"}</td>
-                      <td className="p-4">{item.name || "ไม่มีข้อมูล"}</td>
-                      <td className="p-4">{item.lname || "ไม่มีข้อมูล"}</td>
+                      <td className="p-4">{item.roomId || "ไม่มีข้อมูล"}</td>
                       <td className="p-4">
-                        <DeleteButton studentId={item.userId} roomId={roomData} refreshData={refreshData} refreshmain={props.refreshmain} /></td>
-                
+                        {item.requesterId || "ไม่มีข้อมูล"}
+                      </td>
+
+                      <td className="p-4">
+                        {item.requesterPrefix &&
+                        item.requesterName &&
+                        item.requesterLastName
+                          ? `${item.requesterPrefix} ${item.requesterName} ${item.requesterLastName}`
+                          : "ไม่มีข้อมูล"}
+                      </td>
+
+                      <td className="p-4">
+                        {item.requesterMajor || "ไม่มีข้อมูล"}
+                      </td>
+
+                      <td className="p-4">
+                        <AddButton idRequest={item.id} roomId={item.roomId } roomMajor={item.roomMajor} requesterId={item.requesterId} refreshData={props.refreshData}/>          
+                        {/* <PrintButton documentsId={item.documentsId} /> 
+                          <EditButton />  */}
+
+                        {/* <DetailButton room={item}/> */}
+
+                        {/* <EditButton room={item} 
+                        refreshData={refreshData}/> */}
+
+                        {/* <StudentEditButton room={item} /> */}
+
+                        <DeleteButton
+                          requestId={item.id}
+                          refreshData={props.refreshData}
+                        />
+                      </td>
                     </tr>
                   ))}
               </tbody>
