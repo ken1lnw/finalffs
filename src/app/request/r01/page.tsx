@@ -6,6 +6,12 @@ import { CreatR01 } from "./print/creater01";
 import ConfirmModal from "../../../components/modal/requestconfirm/page";
 import { set } from "date-fns";
 
+import dayjs from "dayjs";
+import "dayjs/locale/th";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
+dayjs.locale("th");
+
 interface UserData {
   userId: string;
   prefix: string;
@@ -35,6 +41,10 @@ export default function R01() {
   const [formValid, setFormValid] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [roomData, setRoomData] = useState<any>(null);
+
+  const id = "621721100411";
+
   const [data, setData] = useState<UserData | null>({
     userId: "",
     prefix: "",
@@ -48,25 +58,55 @@ export default function R01() {
   // const [createdDocs, setCreatedDocs] = useState<any>("");
 
   useEffect(() => {
-    fetch("/api/dbuser/621721100411")
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data.users);
-        if (data.users) {
-          setStudentID(data?.users?.userId || "");
-          setPrefix(data?.users?.prefix || "");
-          setFirstName(data?.users?.name || "");
-          setLastName(data?.users?.lname || "");
-          setFaculty(data?.users?.faculty || "");
-          setMajor(data?.users?.major || "");
-        } else {
-          console.log("error set data");
-        }
-
-        setLoading(false);
-        console.log(data.users);
-      });
+    userDataFetch();
+    roomFetch();
   }, []);
+
+  const userDataFetch = async () => {
+    try {
+      const res = await fetch(`/api/dbuser/${id}`);
+      const data = await res.json();
+      setRoomData(data.users);
+      if (data.users) {
+        setStudentID(data?.users?.userId || "");
+        setPrefix(data?.users?.prefix || "");
+        setFirstName(data?.users?.name || "");
+        setLastName(data?.users?.lname || "");
+        setFaculty(data?.users?.faculty || "");
+        setMajor(data?.users?.major || "");
+        console.log(data.users);
+      } else {
+        console.log("error set Userdata");
+        alert("ไม่สามารถโหลดข้อมูลผู้ใช้งานได้");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      alert("ไม่สามารถโหลดข้อมูลผู้ใช้งานได้");
+    }
+  };
+
+  const roomFetch = async () => {
+    try {
+      const res = await fetch(`/api/dbroom/findroomforstudent/${id}`);
+      const data2 = await res.json();
+      setRoomData(data2);
+      if (data2) {
+        console.log(data2);
+
+        // await refreshData();
+
+        if (data2.rooms.length === 0) {
+          alert("คุณยังไม่มีห้องเรียนกรุณาสมัครเข้าห้องเรียน");
+        }
+      } else {
+        console.log("error set Rooms data");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  };
 
   const createDocDB = async () => {
     const response = await fetch("/api/dbdocs", {
@@ -136,17 +176,27 @@ export default function R01() {
   const handleConfirm = async () => {
     // If the user confirms, call modifyPdf from PrintR01
 
+    if (!roomData || roomData.length === 0) {
+      alert("คุณยังไม่มีห้องเรียนกรุณาสมัครเข้าห้องเรียน");
+      console.log("คุณยังไม่มีห้องเรียนกรุณาสมัครเข้าห้องเรียน");
+      return;
+    }
+    const formattedDate = dayjs(date).format("DD MMMM BBBB");
+    let dayPart, monthPart, yearPart;
+
     const response = await fetch("/api/dbdocs", {
       method: "POST",
       body: JSON.stringify({
-        date: date,
+        date: formattedDate,
         docType: "R.01 คำร้องทั่วไป",
         status: "นักศึกษายื่นคำร้อง",
         studentId: studentID,
         studentPrefix: prefix,
         studentName: firstName,
         studentLastName: lastName,
-        major : major
+        major: major,
+        roomId: roomData.roomId,
+        advisorId: roomData.advisorId
       }),
       headers: {
         "Content-Type": "application/json",

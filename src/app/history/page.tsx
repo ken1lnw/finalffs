@@ -4,11 +4,13 @@ import EditButton from "./editbutton/page";
 import PrintButton from "./printbutton/page";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 
-
 import { useState, useEffect } from "react";
+import TeacherApprove from "./teacher/approve/page";
 
 export default function History() {
   const [data, setData] = useState<any>(null);
+  const [userData, setUserData] = useState<any>(null);
+
   const [isLoading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,12 +18,31 @@ export default function History() {
   const totalItems = data ? data.docs.length : 0; // จำนวนรายการทั้งหมด
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
+  const id = "621721100411";
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
+  const userid = async () => {
+    try {
+      const res = await fetch(`/api/dbuser/${id}`);
+      const data2 = await res.json();
+      setUserData(data2.users);
+      if (data2) {
+        console.log(data2.users);
+        await refreshData();
+      } else {
+        console.log("error set Rooms data");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  };
+
   const refreshData = () => {
-    fetch(`/api/dbdocs/user/621721100411`)
+    fetch(`/api/dbdocs/user/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setData(data);
@@ -36,7 +57,7 @@ export default function History() {
 
   // Call refreshData in useEffect
   useEffect(() => {
-    refreshData();
+    userid();
   }, []);
 
   const handlePreviousPage = () => {
@@ -59,6 +80,7 @@ export default function History() {
         "date",
         "major",
         "status",
+        "roomId",
         "studentId",
         "studentName",
         "studentLastName",
@@ -130,16 +152,31 @@ export default function History() {
                       <td className="p-4">
                         <PrintButton documentsId={item.documentsId} />
 
-                        {/* <EditButton />  */}
-                        {/* <DetailButton user={item} />
+                        {userData?.role === "student" &&
+                          item.status === "นักศึกษายื่นคำร้อง" && (
+                            <>
+                              {/* <PrintButton documentsId={item.documentsId} /> */}
+                              <DeleteButton
+                                documentsId={item.documentsId}
+                                refreshData={userid}
+                              />
+                            </>
+                          )}
 
-                        <EditButton user={item} 
-                        refreshData={refreshData}/> */}
+                        {/* {userData?.role === "student" &&
+                          item.status !== "นักศึกษายื่นคำร้อง" && (
+                            <>
+                              <PrintButton documentsId={item.documentsId} />
+                            </>
+                          )} */}
 
-                        <DeleteButton
-                          documentsId={item.documentsId}
-                          refreshData={refreshData}
-                        />
+                        {userData?.role === "teacher" &&
+                          item.status === "นักศึกษายื่นคำร้อง" && (
+                            <>
+                              <TeacherApprove teacherData={userData} docData={item} refreshData={userid}/>
+                              
+                            </>
+                          )}
                       </td>
                     </tr>
                   ))}

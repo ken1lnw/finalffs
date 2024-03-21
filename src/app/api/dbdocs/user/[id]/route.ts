@@ -4,6 +4,25 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
+// export async function GET(req:Request,{params}:any){
+//     const id = params.id;
+
+//     try {
+//         const docs = await prisma.documents.findMany(
+//             {
+//                 where:{
+//                     studentId: id,
+//                 }
+//             }
+//         )
+//         return NextResponse.json({docs}, { status: 200 })
+        
+//     } catch (error) {
+//         return NextResponse.json({ error: 'ERROR CANT GET' }, { status: 500 })
+//     }
+
+// }
+
 export async function GET(req:Request,{params}:any){
     const id = params.id;
 
@@ -11,7 +30,12 @@ export async function GET(req:Request,{params}:any){
         const docs = await prisma.documents.findMany(
             {
                 where:{
-                    studentId: id,
+                    OR: [
+                        { studentId: id },
+                        { advisorId: id },
+                        { headDepartmentId: id },
+                        { officerId: id }
+                    ]
                 }
             }
         )
@@ -22,6 +46,7 @@ export async function GET(req:Request,{params}:any){
     }
 
 }
+
 
 
 export async function PUT(req:Request,{params}:any) {

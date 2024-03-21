@@ -252,7 +252,9 @@ async function CreatR01(props:any) {
     });
 
     console.log("File uploaded successfully");
+    alert("สร้างไฟล์คำร้องสำเร็จ")
   } catch (error) {
+    alert("สร้างไฟล์คำร้องไม่สำเร็จ")
     console.error("Error uploading file:", error);
   }
 
@@ -260,7 +262,8 @@ async function CreatR01(props:any) {
 
   const pdfBlobUrl = URL.createObjectURL(pdfBlob);
 
-  window.open(pdfBlobUrl, "_blank");
+  // window.open(pdfBlobUrl, "_blank");
+  
 }
 
 export { CreatR01 };

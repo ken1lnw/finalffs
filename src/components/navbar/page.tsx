@@ -10,10 +10,12 @@ const navigation = [
   { name: "หน้าแรก", href: "/", current: false },
   { name: "ยื่นคำร้อง", href: "/request", current: false },
   { name: "ประวัติ", href: "/history", current: false },
-  { name: "จัดการคำร้อง", href: "/managedocs", current: false },
-  { name: "จัดการผู้ใช้งาน", href: "/manageusers", current: false },
-  { name: "จัดการห้องเรียน", href: "/managerooms", current: false },
-  { name: "จัดการสาขา", href: "/managemajors", current: false },
+  { name: "แอดมิน", href: "", current: false, subItems: [
+    { name: "จัดการคำร้อง", href: "/managedocs", current: false },
+    { name: "จัดการผู้ใช้งาน", href: "/manageusers", current: false },
+    { name: "จัดการห้องเรียน", href: "/managerooms", current: false },
+    { name: "จัดการสาขา", href: "/managemajors", current: false }
+  ]},
   { name: "จัดการห้องเรียน(อาจารย์)", href: "/teachermanagerooms", current: false },
   { name: "สมัครเข้าห้องเรียน", href: "/roomregis", current: false },
 ];
@@ -58,22 +60,72 @@ export default function Navbar() {
                 <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                   <div className="hidden sm:ml-6 sm:block">
                     <div className="flex space-x-4">
-                      {navigation.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          onClick={() => handleNavigationClick(item.name)} // เพิ่ม event handler สำหรับการคลิก
-                          className={classNames(
-                            currentPage === item.name
-                              ? "bg-gray-900 text-white"
-                              : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                            "rounded-md px-3 py-2 text-sm font-medium"
-                          )}
-                          aria-current={item.current ? "page" : undefined}
-                        >
-                          {item.name}
-                        </Link>
-                      ))}
+                    {navigation.map((item) => (
+  <div key={item.name} className="relative">
+    {/* ตรวจสอบว่ามี subItems หรือไม่ */}
+    {item.subItems ? (
+      <Menu as="div" className="relative inline-block text-left">
+        <div>
+          <Menu.Button
+            className={classNames(
+              currentPage === item.name
+                ? "bg-gray-900 text-white"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white",
+              "rounded-md px-3  text-sm font-medium"
+            )}
+          >
+            {item.name}
+          </Menu.Button>
+        </div>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            {item.subItems.map((subItem) => (
+              <Menu.Item key={subItem.name}>
+                {({ active }) => (
+                  <Link
+                    href={subItem.href}
+                    onClick={() => handleNavigationClick(subItem.name)}
+                    className={classNames(
+                      active ? "bg-gray-100" : "",
+                      "block px-4 py-2 text-sm text-gray-700"
+                    )}
+                  >
+                    {subItem.name}
+                  </Link>
+                )}
+              </Menu.Item>
+            ))}
+          </Menu.Items>
+        </Transition>
+      </Menu>
+    ) : (
+      // หากไม่มี subItems ให้แสดง link ตามปกติ
+      <Link
+        key={item.name}
+        href={item.href}
+        onClick={() => handleNavigationClick(item.name)}
+        className={classNames(
+          currentPage === item.name
+            ? "bg-gray-900 text-white"
+            : "text-gray-300 hover:bg-gray-700 hover:text-white",
+          "rounded-md px-3 py-2 text-sm font-medium"
+        )}
+        aria-current={item.current ? "page" : undefined}
+      >
+        {item.name}
+      </Link>
+    )}
+  </div>
+))}
+
                     </div>
                   </div>
                 </div>
@@ -160,25 +212,64 @@ export default function Navbar() {
             </div>
 
             <Disclosure.Panel className="sm:hidden">
-              <div className="space-y-1 px-2 pb-3 pt-2">
-                {navigation.map((item) => (
-                  <Disclosure.Button
-                    key={item.name}
-                    as="a"
-                    href={item.href}
-                    className={classNames(
-                      item.current
-                        ? "bg-gray-900 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                      "block rounded-md px-3 py-2 text-base font-medium"
-                    )}
-                    aria-current={item.current ? "page" : undefined}
-                  >
-                    {item.name}
-                  </Disclosure.Button>
-                ))}
-              </div>
-            </Disclosure.Panel>
+  <div className="space-y-1 px-2 pb-3 pt-2">
+    {navigation.map((item) => (
+      <div key={item.name} className="relative">
+        {/* ตรวจสอบว่ามี subItems หรือไม่ */}
+        {item.subItems ? (
+          <Disclosure>
+            {({ open }) => (
+              <>
+                <Disclosure.Button
+                  className={classNames(
+                    "block rounded-md px-3 py-2 text-base font-medium",
+                    item.current
+                      ? "bg-gray-900 text-white"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                  )}
+                >
+                  {item.name} +
+                </Disclosure.Button>
+                <Disclosure.Panel>
+                  <div className="space-y-1">
+                    {item.subItems.map((subItem) => (
+                      <Link
+                        key={subItem.name}
+                        href={subItem.href}
+                        onClick={() => handleNavigationClick(subItem.name)}
+                        className={classNames(
+                          "block px-4 py-2 text-sm text-white",
+                          currentPage === subItem.name && "bg-gray-100",
+                        )}
+                      >
+                        - {subItem.name}
+                      </Link>
+                    ))}
+                  </div>
+                </Disclosure.Panel>
+              </>
+            )}
+          </Disclosure>
+        ) : (
+          // หากไม่มี subItems ให้แสดง link ตามปกติ
+          <Disclosure.Button
+            key={item.name}
+            as="a"
+            href={item.href}
+            className={classNames(
+              item.current ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white",
+              "block rounded-md px-3 py-2 text-base font-medium"
+            )}
+            aria-current={item.current ? "page" : undefined}
+          >
+            {item.name}
+          </Disclosure.Button>
+        )}
+      </div>
+    ))}
+  </div>
+</Disclosure.Panel>
+
           </>
         )}
       </Disclosure>
