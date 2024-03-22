@@ -6,10 +6,16 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 
 import { useState, useEffect } from "react";
 import TeacherApprove from "./teacher/approve/page";
+import HeadDepartmentApprove from "./headdep/approve/page";
+import OfficerApprove from "./officer/approve/page";
 
 export default function History() {
   const [data, setData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
+  const [majorData, setMajorData] = useState<any>(null);
+  const [isHead, setIsHead] = useState(false);
+  const [isOfficer, setIsOfficer] = useState(false);
+  const [allDoc, setAllDoc] = useState<any>(null);
 
   const [isLoading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -31,7 +37,13 @@ export default function History() {
       setUserData(data2.users);
       if (data2) {
         console.log(data2.users);
-        await refreshData();
+        if (data2?.users?.role === "officer") {
+          setIsOfficer(true);
+          await lastFetch();
+        } else {
+          await majorFetch(data2.users);
+          await refreshData();
+        }
       } else {
         console.log("error set Rooms data");
       }
@@ -48,6 +60,40 @@ export default function History() {
         setData(data);
         if (data) {
           console.log(data);
+        } else {
+          console.log("error set Docs data");
+        }
+        setLoading(false);
+      });
+  };
+
+  const majorFetch = async (user: any) => {
+    try {
+      const res = await fetch(`/api/dbmajor/${user.major}`);
+      const data2 = await res.json();
+      if (data2) {
+        console.log(data2);
+        if (data2?.majors?.headdepartmentId === user.userId) {
+          setIsHead(true);
+        }
+      } else {
+        console.log("error set Major data");
+        alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ");
+      }
+      setLoading(false);
+    } catch (error) {
+      alert("ผิดพลาดในการดาวน์โหลดข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ");
+      console.error("Failed to fetch user data:", error);
+    }
+  };
+
+  const lastFetch = async () => {
+    fetch(`/api/dbdocs/`)
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        if (data) {
+          console.log(data.docs);
         } else {
           console.log("error set Docs data");
         }
@@ -173,8 +219,35 @@ export default function History() {
                         {userData?.role === "teacher" &&
                           item.status === "นักศึกษายื่นคำร้อง" && (
                             <>
-                              <TeacherApprove teacherData={userData} docData={item} refreshData={userid}/>
-                              
+                              <TeacherApprove
+                                teacherData={userData}
+                                docData={item}
+                                refreshData={userid}
+                              />
+                            </>
+                          )}
+
+                        {userData?.role === "teacher" &&
+                          item.status === "อาจารย์ที่ปรึกษาลงความเห็น" &&
+                          isHead === true && (
+                            <>
+                              <HeadDepartmentApprove
+                                teacherData={userData}
+                                docData={item}
+                                refreshData={userid}
+                              />
+                            </>
+                          )}
+
+                        {userData?.role === "officer" &&
+                          item.status === "หัวหน้าสาขาลงความเห็น" &&
+                           (
+                            <>
+                              <OfficerApprove
+                                teacherData={userData}
+                                docData={item}
+                                refreshData={userid}
+                              />
                             </>
                           )}
                       </td>

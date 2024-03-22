@@ -90,8 +90,9 @@ export default function R01() {
     try {
       const res = await fetch(`/api/dbroom/findroomforstudent/${id}`);
       const data2 = await res.json();
-      setRoomData(data2);
       if (data2) {
+        setRoomData(data2);
+
         console.log(data2);
 
         // await refreshData();
@@ -195,8 +196,11 @@ export default function R01() {
         studentName: firstName,
         studentLastName: lastName,
         major: major,
-        roomId: roomData.roomId,
-        advisorId: roomData.advisorId
+        roomId: roomData?.rooms[0]?.roomId,
+        advisorId: roomData?.rooms[0]?.advisorId,
+        advisorPrefix: roomData?.rooms[0]?.advisorPrefix,
+        advisorName: roomData?.rooms[0]?.advisorName,
+        advisorLastName: roomData?.rooms[0]?.advisorLastName
       }),
       headers: {
         "Content-Type": "application/json",

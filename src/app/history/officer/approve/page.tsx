@@ -7,11 +7,11 @@ import dayjs from "dayjs";
 import "dayjs/locale/th";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import ConfirmTeacherModal from "./confirm/page";
-import { TeacherApproveR01 } from "./print/tapprove01";
+import { OfficerApproveR01 } from "./print/tapprove01";
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
-export default function TeacherApprove(props: any) {
+export default function OfficerApprove(props: any) {
   const [open, setOpen] = useState(false);
 
   // const [educationLevel, setEducationLevel] = useState("");
@@ -25,27 +25,26 @@ export default function TeacherApprove(props: any) {
 
   const [formValid, setFormValid] = useState(false);
 
-  const [comment, setComment] = useState("");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [date, setDate] = useState("");
   const [major, setMajor] = useState<any>(null);
+
+  const [result, setResult] = useState("ดำเนินการแล้ว");
+  const [comment, setComment] = useState("");
+  const [showReason, setShowReason] = useState(false);
 
   const currentDate = dayjs();
   const formattedDate = currentDate.format("DD MMMM BBBB");
 
   const resetStates = () => {
     setComment("");
-
   };
 
   useEffect(() => {
-    
-  console.log(teacherData);
- 
-  }, [])
-
-
+    console.log(teacherData);
+  }, []);
 
   const majorFetch = async () => {
     try {
@@ -54,62 +53,50 @@ export default function TeacherApprove(props: any) {
       if (data2) {
         // console.log(data2.majors);
         await handleConfirm(data2.majors);
-
-
-        
       } else {
         console.log("error set Major data");
-        alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ")
+        alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ");
         setIsModalOpen(false);
-
       }
       setLoading(false);
     } catch (error) {
-        alert("ผิดพลาดในการดาวน์โหลดข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ")
+      alert("ผิดพลาดในการดาวน์โหลดข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ");
       console.error("Failed to fetch user data:", error);
       setIsModalOpen(false);
-
     }
   };
-  
 
-  const handleConfirm = async (major:any) => {
-
+  const handleConfirm = async (major: any) => {
     // await majorFetch();
-    if(major == null){
-        alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ")
-        setIsModalOpen(false);
-        return;
-
+    if (major == null) {
+      alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ");
+      setIsModalOpen(false);
+      return;
     }
 
     console.log(major);
 
-
     try {
-
       const response = await fetch(`/api/dbdocs/${docData.documentsId}`, {
         method: "PUT",
         body: JSON.stringify({
+          status: result,
+          // status: "นักศึกษายื่นคำร้อง",
 
-            status: "อาจารย์ที่ปรึกษาลงความเห็น",
-            // status: "นักศึกษายื่นคำร้อง",
-            advisorComments: comment ,
-            advisorDate: formattedDate ,
-        
-          
-            headDepartmentId: major.headdepartmentId,
-            headDepartmentPrefix: major.headdepartmentPrefix,
-            headDepartmentName: major.headdepartmentName,
-            headDepartmentLastName: major.headdepartmentLastName,
+          officerId:teacherData.userId,
+          officerPrefix:teacherData.prefix,
+          officerName:teacherData.name,
+          officerLastName:teacherData.lname,
+          officerComments:comment,
+          officerDate: formattedDate
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      if(!response.ok){
-        alert("บันทึกข้อมูลเอกสารลงบนฐานข้อมูลไม่สำเร็จ")
+      if (!response.ok) {
+        alert("บันทึกข้อมูลเอกสารลงบนฐานข้อมูลไม่สำเร็จ");
         props.refreshData();
         return;
       }
@@ -117,28 +104,20 @@ export default function TeacherApprove(props: any) {
       // ดึงข้อมูลที่สร้างเอกสารมาจาก response
       const EditedData = await response.json();
 
-
-
-
       const formDataForPrintR01 = {
         DocsId: docData.documentsId,
-        advisorDate: formattedDate,
-        advisorId: teacherData.userId,
-        advisorPrefix:teacherData.prefix,
-        advisorName:teacherData.name,
-        advisorLastName:teacherData.lname,
-        advisorComments: comment
+        DocResult: result,
+        officerDate: formattedDate,
+        officerId: teacherData.userId,
+        officerPrefix: teacherData.prefix,
+        officerName: teacherData.name,
+        officerLastName: teacherData.lname,
+        officerComments: comment,
       };
-  
+
       // Call modifyPdf from PrintR01 with the form data
-      await TeacherApproveR01(formDataForPrintR01);
+      await OfficerApproveR01(formDataForPrintR01);
       // console.log(createdDocs);
-
-
-
-
-
-
 
       console.log("บันทึกข้อมูลลงบนเอกสารสำเร็จ");
       // alert("บันทึกข้อมูลลงบนเอกสารสำเร็จ")
@@ -147,36 +126,29 @@ export default function TeacherApprove(props: any) {
       setIsModalOpen(false);
       resetStates();
       props.refreshData();
-      
     } catch (error) {
-        alert("ไม่สามารถบันทึกข้อมูลเอกสารลงบนฐานข้อมูลได้")
-        resetStates();
-      console.log("Error while Editing Doc Data");
+      alert("ไม่สามารถบันทึกข้อมูลเอกสารลงบนฐานข้อมูลได้");
+      resetStates();
+      console.log(error);
     }
-
-
-
   };
 
+  // const validateForm = () => {
+  //   // Perform validation for each input field
+  //   const isValid = comment !== "";
 
+  //   setFormValid(isValid);
 
-  const validateForm = () => {
-    // Perform validation for each input field
-    const isValid =
-      comment !== "";
-
-    setFormValid(isValid);
-
-    return isValid;
-  };
+  //   return isValid;
+  // };
 
   const handleSubmit = () => {
-    if (validateForm()) {
+    // if (validateForm()) {
       setIsModalOpen(true);
-    } else {
-      // Handle form validation errors or provide feedback to the user
-      alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
-    }
+    // } else {
+    //   // Handle form validation errors or provide feedback to the user
+    //   alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+    // }
   };
 
   const handleCancel = () => {
@@ -258,27 +230,48 @@ export default function TeacherApprove(props: any) {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          ความเห็นของอาจารย์ที่ปรึกษา
+                          ผลการดำเนินการของเจ้าหน้าที่
                         </Dialog.Title>
                         <div className="mt-2">
                           <div className="grid grid-cols-12 gap-2 items-center">
-
-                          <p className="pt-2 col-span-12">
-                              ความเห็น
-                            </p>
+                            <p className="pt-2 col-span-12">ผลการดำเนินการ</p>
 
                             <p className="pb-2 col-span-12">
-                              <input
-                                type="text"
+                              {/* <label>ผลการดำเนินการ</label> */}
+
+                              <select
                                 className="border border-black rounded-md p-1 w-full"
-                                placeholder="ความเห็น"
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                              />
+                                value={result}
+                                onChange={(e) => {
+                                  setResult(e.target.value);
+                                  setShowReason(
+                                    e.target.value === "ดำเนินการไม่ได้"
+                                  );
+                                }}
+                              >
+                                <option value="ดำเนินการแล้ว">
+                                  ดำเนินการแล้ว
+                                </option>
+                                <option value="ดำเนินการไม่ได้">
+                                  ดำเนินการไม่ได้
+                                </option>
+                              </select>
                             </p>
 
-         
-                
+                            {showReason && (
+                              <>
+                                <p className="pt-2 col-span-12">เหตุผล</p>
+                                <p className="pb-2 col-span-12">
+                                  <input
+                                    type="text"
+                                    className="border border-black rounded-md p-1 w-full"
+                                    placeholder="เหตุผล"
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                  />
+                                </p>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -315,10 +308,10 @@ export default function TeacherApprove(props: any) {
       </Transition.Root>
 
       <ConfirmTeacherModal
-            isOpen={isModalOpen}
-            onConfirm={majorFetch}
-            onCancel={handleCancel}
-          />
+        isOpen={isModalOpen}
+        onConfirm={majorFetch}
+        onCancel={handleCancel}
+      />
     </>
   );
 }

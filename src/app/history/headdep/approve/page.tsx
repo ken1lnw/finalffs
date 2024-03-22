@@ -7,11 +7,11 @@ import dayjs from "dayjs";
 import "dayjs/locale/th";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import ConfirmTeacherModal from "./confirm/page";
-import { TeacherApproveR01 } from "./print/tapprove01";
+import { HeadDepApproveR01} from "./print/tapprove01";
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
-export default function TeacherApprove(props: any) {
+export default function HeadDepartmentApprove(props: any) {
   const [open, setOpen] = useState(false);
 
   // const [educationLevel, setEducationLevel] = useState("");
@@ -92,10 +92,10 @@ export default function TeacherApprove(props: any) {
         method: "PUT",
         body: JSON.stringify({
 
-            status: "อาจารย์ที่ปรึกษาลงความเห็น",
+            status: "หัวหน้าสาขาลงความเห็น",
             // status: "นักศึกษายื่นคำร้อง",
-            advisorComments: comment ,
-            advisorDate: formattedDate ,
+            headDepartmentComment: comment ,
+            headDepartmentDate: formattedDate ,
         
           
             headDepartmentId: major.headdepartmentId,
@@ -122,16 +122,16 @@ export default function TeacherApprove(props: any) {
 
       const formDataForPrintR01 = {
         DocsId: docData.documentsId,
-        advisorDate: formattedDate,
-        advisorId: teacherData.userId,
-        advisorPrefix:teacherData.prefix,
-        advisorName:teacherData.name,
-        advisorLastName:teacherData.lname,
-        advisorComments: comment
+        headDepartmentDate: formattedDate,
+        headDepartmentId: teacherData.userId,
+        headDepartmentPrefix:teacherData.prefix,
+        headDepartmentName:teacherData.name,
+        headDepartmentLastName:teacherData.lname,
+        headDepartmentComment: comment
       };
   
       // Call modifyPdf from PrintR01 with the form data
-      await TeacherApproveR01(formDataForPrintR01);
+      await HeadDepApproveR01(formDataForPrintR01);
       // console.log(createdDocs);
 
 
@@ -258,7 +258,7 @@ export default function TeacherApprove(props: any) {
                           as="h3"
                           className="text-base font-semibold leading-6 text-gray-900"
                         >
-                          ความเห็นของอาจารย์ที่ปรึกษา
+                          ความเห็นของหัวหน้าสาขาวิชา
                         </Dialog.Title>
                         <div className="mt-2">
                           <div className="grid grid-cols-12 gap-2 items-center">
