@@ -24,9 +24,13 @@ export default function DeleteButton(props:any) {
       if (deleteuser.ok) {
           // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
           console.log("UserinRoom Deleted successfully")
+          alert("ลบผู้ใช้งานสำเร็จ");
+
       } else {
           // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
           console.error("UserinRoom Delete request failed");
+          alert("ลบผู้ใช้งานไม่สำเร็จ");
+
       }
       // props.refreshData();
       setOpen(false);

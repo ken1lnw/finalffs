@@ -25,12 +25,15 @@ export default function DeleteButton(props: any) {
       if (deleteuser.ok) {
         // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
         console.log("User Deleted from Major successfully");
+        alert("ลบผู้ใช้งานออกจากสาขาวิชาสำเร็จ");
 
         // เรียกใช้ refreshData ที่ถูกส่งเข้ามาเพื่ออัพเดตข้อมูลหน้าจอหลังจากการลบ
         props.refreshData();
       } else {
         // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
         console.error("Delete User request failed");
+        alert("ลบผู้ใช้งานออกจากสาขาวิชาไม่สำเร็จ");
+
       }
       // props.refreshData();
       setOpen(false);

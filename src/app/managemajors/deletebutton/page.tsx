@@ -22,9 +22,13 @@ export default function DeleteButton(props:any) {
       if (deleteuser.ok) {
           // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
           console.log("Major Deleted successfully")
+          alert("ลบสาขาวิชาสำเร็จ");
+
       } else {
           // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
           console.error("Major Delete request failed");
+          alert("ลบสาขาวิชาไม่สำเร็จ");
+
       }
       props.refreshData();
       setOpen(false);

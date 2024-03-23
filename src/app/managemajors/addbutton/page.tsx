@@ -164,6 +164,8 @@ export default function AddButton(props: any) {
       setOpen(false);
       // console.log("สร้างห้องสำเร็จ");
       // console.log(CreatedData);
+      alert("เพิ่มสาขาวิชาสำเร็จ");
+
       props.refreshData();
       resetStates();
     } catch (error) {

@@ -49,6 +49,8 @@ export default function EditButton(props: any) {
       // ดึงข้อมูลที่สร้างเอกสารมาจาก response
       const EditedData = await response.json();
       console.log("แก้ไขข้อมูลห้องสำเร็จ");
+      alert("แก้ไขข้อมูลห้องสำเร็จ");
+
       console.log(EditedData);
       props.refreshData();
     } catch (error) {

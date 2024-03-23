@@ -50,8 +50,10 @@ export default function DeleteButton(props:any) {
       if (deletefromdb.ok) {
           // ทำอะไรสักอย่างเมื่อลบข้อมูลสำเร็จ
           console.log("DB Docs Deleted successfully");
+          alert("ลบคำร้องสำเร็จ");
       } else {
           // ทำอะไรสักอย่างเมื่อมีข้อผิดพลาดเกิดขึ้นในการลบข้อมูล
+          alert("ลบคำร้องไม่สำเร็จ");
           console.error("DB Docs Delete request failed");
       }
       props.refreshData();
