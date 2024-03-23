@@ -32,6 +32,7 @@ model Documents {
   date           String?
   major  String?
   status         String?
+  reason String?
   roomId String?
 
   studentId String?

@@ -39,24 +39,24 @@ async function OfficerApproveR01(props:any) {
 
   if (props.DocResult === "ดำเนินการแล้ว") {
     firstPage.drawLine({
-      start: { x: 316, y: height - 639.6 },
-      end: { x: 316 + 11, y: height - (639.6 - 10) },
+      start: { x: 322, y: height - 680.6 },
+      end: { x: 322 + 11, y: height - (680.6 - 10) },
       thickness: 2,
       color: rgb(0, 0, 1),
       opacity: 0.75,
     });
   } else if (props.DocResult === "ดำเนินการไม่ได้") {
     firstPage.drawLine({
-      start: { x: 316, y: height - 663 },
-      end: { x: 316 + 11, y: height - (663 - 10) },
+      start: { x: 321, y: height - 669 },
+      end: { x: 321 + 11, y: height - (669 - 10) },
       thickness: 2,
       color: rgb(0, 0, 1),
       opacity: 0.75,
     });
 
     firstPage.drawText(props.officerComments, {
-      x: 400,
-      y: height - 663,
+      x: 409,
+      y: height - 669,
       size: 14,
       font: THSarabunFont,
       color: rgb(0, 0, 1),
@@ -67,8 +67,8 @@ async function OfficerApproveR01(props:any) {
 
 
   firstPage.drawText(fullname, {
-    x: 392,
-    y: height - 692,
+    x: 412,
+    y: height - 722,
     size: 14,
     font: THSarabunFont,
     color: rgb(0, 0, 1),
@@ -82,8 +82,8 @@ async function OfficerApproveR01(props:any) {
     [dayPart, monthPart, yearPart] = formattedDate.split(" ");
     // Draw day part
     firstPage.drawText(dayPart, {
-      x: 389,
-      y: height - 708,
+      x: 398,
+      y: height - 738,
       size: 14,
       font: THSarabunFont,
       color: rgb(0, 0, 1),
@@ -91,8 +91,8 @@ async function OfficerApproveR01(props:any) {
 
     // Draw month part
     firstPage.drawText(monthPart, {
-      x: 408, // Adjust the x-coordinate as needed
-      y: height - 708,
+      x: 421, // Adjust the x-coordinate as needed
+      y: height - 738,
       size: 14,
       font: THSarabunFont,
       color: rgb(0, 0, 1),
@@ -100,8 +100,8 @@ async function OfficerApproveR01(props:any) {
 
     // Draw era part
     firstPage.drawText(yearPart, {
-      x: 468, // Adjust the x-coordinate as needed
-      y: height - 708,
+      x: 479, // Adjust the x-coordinate as needed
+      y: height - 738,
       size: 14,
       font: THSarabunFont,
       color: rgb(0, 0, 1),

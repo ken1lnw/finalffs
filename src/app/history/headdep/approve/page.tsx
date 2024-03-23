@@ -8,6 +8,7 @@ import "dayjs/locale/th";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import ConfirmTeacherModal from "./confirm/page";
 import { HeadDepApproveR01} from "./print/tapprove01";
+import { HeadDepApproveR11 } from "./print/tapprove11";
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
@@ -131,9 +132,14 @@ export default function HeadDepartmentApprove(props: any) {
       };
   
       // Call modifyPdf from PrintR01 with the form data
-      await HeadDepApproveR01(formDataForPrintR01);
       // console.log(createdDocs);
-
+      if (docData.docType === "R.01 คำร้องทั่วไป") {
+        await HeadDepApproveR01(formDataForPrintR01);
+      }else if(docData.docType === "R.11 คำร้องขอลงทะเบียนเรียนเทียบรายวิชา"){
+        await HeadDepApproveR11(formDataForPrintR01);
+      }else{
+        alert("ผิดพลาดชนิดเอกสารไม่ถูกต้อง");
+      }
 
 
 

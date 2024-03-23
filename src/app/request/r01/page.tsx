@@ -234,7 +234,7 @@ export default function R01() {
     };
 
     // Call modifyPdf from PrintR01 with the form data
-    CreatR01(formDataForPrintR01);
+    await CreatR01(formDataForPrintR01);
     // console.log(createdDocs);
 
     // Close the confirmation modal

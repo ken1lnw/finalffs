@@ -27,6 +27,15 @@ async function CreatR11(props: any) {
   const firstPage = pages[0];
   const { width, height } = firstPage.getSize();
 
+  const docid = `รหัสคำร้อง : ${props.createdDocs}`
+  firstPage.drawText(docid, {
+    x: 27,
+    y: height - 807,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
+  });
+
   const formattedDate = dayjs(props.date).format("DD MMMM BBBB");
   let dayPart, monthPart, yearPart;
 
@@ -338,10 +347,36 @@ async function CreatR11(props: any) {
   // Additional modifications...
 
   const pdfBytes = await pdfDoc.save();
+  const formData = new FormData();
   const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+  formData.append("file", pdfBlob, `${props.createdDocs}.pdf`);
+
+  // Make a POST request to your server to upload the file using fetch
+  try {
+    await fetch("/api/uploadpdf", {
+      method: "POST",
+      body: formData,
+    });
+
+    console.log("File uploaded successfully");
+    alert("สร้างไฟล์คำร้องสำเร็จ")
+  } catch (error) {
+    alert("สร้างไฟล์คำร้องไม่สำเร็จ")
+    console.error("Error uploading file:", error);
+  }
+
+
+
   const pdfBlobUrl = URL.createObjectURL(pdfBlob);
 
-  window.open(pdfBlobUrl, "_blank");
+  // const pdfBytes = await pdfDoc.save();
+  // const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+  // const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+
+  // window.open(pdfBlobUrl, "_blank");
+
+
+
 }
 
 export { CreatR11 };

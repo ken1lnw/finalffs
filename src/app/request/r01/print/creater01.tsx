@@ -27,6 +27,15 @@ async function CreatR01(props:any) {
   const firstPage = pages[0];
   const { width, height } = firstPage.getSize();
 
+  const docid = `รหัสคำร้อง : ${props.createdDocs}`
+  firstPage.drawText(docid, {
+    x: 30,
+    y: height - 791,
+    size: 14,
+    font: THSarabunFont,
+    color: rgb(0, 0, 1),
+  });
+
   firstPage.drawText(props.subject, {
     x: 80,
     y: height - 160,

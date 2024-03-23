@@ -8,6 +8,7 @@ import "dayjs/locale/th";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 import ConfirmTeacherModal from "./confirm/page";
 import { TeacherApproveR01 } from "./print/tapprove01";
+import { TeacherApproveR11 } from "./print/tapprove11";
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
@@ -36,16 +37,11 @@ export default function TeacherApprove(props: any) {
 
   const resetStates = () => {
     setComment("");
-
   };
 
   useEffect(() => {
-    
-  console.log(teacherData);
- 
-  }, [])
-
-
+    console.log(docData);
+  }, []);
 
   const majorFetch = async () => {
     try {
@@ -54,62 +50,50 @@ export default function TeacherApprove(props: any) {
       if (data2) {
         // console.log(data2.majors);
         await handleConfirm(data2.majors);
-
-
-        
       } else {
         console.log("error set Major data");
-        alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ")
+        alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ");
         setIsModalOpen(false);
-
       }
       setLoading(false);
     } catch (error) {
-        alert("ผิดพลาดในการดาวน์โหลดข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ")
+      alert("ผิดพลาดในการดาวน์โหลดข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ");
       console.error("Failed to fetch user data:", error);
       setIsModalOpen(false);
-
     }
   };
-  
 
-  const handleConfirm = async (major:any) => {
-
+  const handleConfirm = async (major: any) => {
     // await majorFetch();
-    if(major == null){
-        alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ")
-        setIsModalOpen(false);
-        return;
-
+    if (major == null) {
+      alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ");
+      setIsModalOpen(false);
+      return;
     }
 
     console.log(major);
 
-
     try {
-
       const response = await fetch(`/api/dbdocs/${docData.documentsId}`, {
         method: "PUT",
         body: JSON.stringify({
+          status: "อาจารย์ที่ปรึกษาลงความเห็น",
+          // status: "นักศึกษายื่นคำร้อง",
+          advisorComments: comment,
+          advisorDate: formattedDate,
 
-            status: "อาจารย์ที่ปรึกษาลงความเห็น",
-            // status: "นักศึกษายื่นคำร้อง",
-            advisorComments: comment ,
-            advisorDate: formattedDate ,
-        
-          
-            headDepartmentId: major.headdepartmentId,
-            headDepartmentPrefix: major.headdepartmentPrefix,
-            headDepartmentName: major.headdepartmentName,
-            headDepartmentLastName: major.headdepartmentLastName,
+          headDepartmentId: major.headdepartmentId,
+          headDepartmentPrefix: major.headdepartmentPrefix,
+          headDepartmentName: major.headdepartmentName,
+          headDepartmentLastName: major.headdepartmentLastName,
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      if(!response.ok){
-        alert("บันทึกข้อมูลเอกสารลงบนฐานข้อมูลไม่สำเร็จ")
+      if (!response.ok) {
+        alert("บันทึกข้อมูลเอกสารลงบนฐานข้อมูลไม่สำเร็จ");
         props.refreshData();
         return;
       }
@@ -117,28 +101,25 @@ export default function TeacherApprove(props: any) {
       // ดึงข้อมูลที่สร้างเอกสารมาจาก response
       const EditedData = await response.json();
 
-
-
-
       const formDataForPrintR01 = {
         DocsId: docData.documentsId,
         advisorDate: formattedDate,
         advisorId: teacherData.userId,
-        advisorPrefix:teacherData.prefix,
-        advisorName:teacherData.name,
-        advisorLastName:teacherData.lname,
-        advisorComments: comment
+        advisorPrefix: teacherData.prefix,
+        advisorName: teacherData.name,
+        advisorLastName: teacherData.lname,
+        advisorComments: comment,
       };
-  
+
       // Call modifyPdf from PrintR01 with the form data
-      await TeacherApproveR01(formDataForPrintR01);
       // console.log(createdDocs);
-
-
-
-
-
-
+      if (docData.docType === "R.01 คำร้องทั่วไป") {
+        await TeacherApproveR01(formDataForPrintR01);
+      }else if(docData.docType === "R.11 คำร้องขอลงทะเบียนเรียนเทียบรายวิชา"){
+        await TeacherApproveR11(formDataForPrintR01);
+      }else{
+        alert("ผิดพลาดชนิดเอกสารไม่ถูกต้อง");
+      }
 
       console.log("บันทึกข้อมูลลงบนเอกสารสำเร็จ");
       // alert("บันทึกข้อมูลลงบนเอกสารสำเร็จ")
@@ -147,23 +128,16 @@ export default function TeacherApprove(props: any) {
       setIsModalOpen(false);
       resetStates();
       props.refreshData();
-      
     } catch (error) {
-        alert("ไม่สามารถบันทึกข้อมูลเอกสารลงบนฐานข้อมูลได้")
-        resetStates();
+      alert("ไม่สามารถบันทึกข้อมูลเอกสารลงบนฐานข้อมูลได้");
+      resetStates();
       console.log("Error while Editing Doc Data");
     }
-
-
-
   };
-
-
 
   const validateForm = () => {
     // Perform validation for each input field
-    const isValid =
-      comment !== "";
+    const isValid = comment !== "";
 
     setFormValid(isValid);
 
@@ -262,10 +236,7 @@ export default function TeacherApprove(props: any) {
                         </Dialog.Title>
                         <div className="mt-2">
                           <div className="grid grid-cols-12 gap-2 items-center">
-
-                          <p className="pt-2 col-span-12">
-                              ความเห็น
-                            </p>
+                            <p className="pt-2 col-span-12">ความเห็น</p>
 
                             <p className="pb-2 col-span-12">
                               <input
@@ -276,9 +247,6 @@ export default function TeacherApprove(props: any) {
                                 onChange={(e) => setComment(e.target.value)}
                               />
                             </p>
-
-         
-                
                           </div>
                         </div>
                       </div>
@@ -315,10 +283,10 @@ export default function TeacherApprove(props: any) {
       </Transition.Root>
 
       <ConfirmTeacherModal
-            isOpen={isModalOpen}
-            onConfirm={majorFetch}
-            onCancel={handleCancel}
-          />
+        isOpen={isModalOpen}
+        onConfirm={majorFetch}
+        onCancel={handleCancel}
+      />
     </>
   );
 }

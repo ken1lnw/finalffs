@@ -68,11 +68,11 @@ export default function OfficerApprove(props: any) {
 
   const handleConfirm = async (major: any) => {
     // await majorFetch();
-    if (major == null) {
-      alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ");
-      setIsModalOpen(false);
-      return;
-    }
+    // if (major == null) {
+    //   alert("ผิดพลาดไม่มีข้อมูลสาขาวิชา กรุณาติดต่อผู้ดูแลระบบ");
+    //   setIsModalOpen(false);
+    //   return;
+    // }
 
     console.log(major);
 
@@ -116,11 +116,12 @@ export default function OfficerApprove(props: any) {
       };
 
       // Call modifyPdf from PrintR01 with the form data
-      await OfficerApproveR01(formDataForPrintR01);
+      // await OfficerApproveR01(formDataForPrintR01);
       // console.log(createdDocs);
 
       console.log("บันทึกข้อมูลลงบนเอกสารสำเร็จ");
       // alert("บันทึกข้อมูลลงบนเอกสารสำเร็จ")
+      alert("บันทึกข้อมูลลงบนเอกสารสำเร็จ");
 
       console.log(EditedData);
       setIsModalOpen(false);

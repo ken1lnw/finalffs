@@ -10,7 +10,7 @@ dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
 import fontkit from "@pdf-lib/fontkit";
-async function TeacherApproveR01(props:any) {
+async function TeacherApproveR11(props:any) {
   // const { formData } = props;
   console.log(props)
   const url = `/docsign/${props.DocsId}.pdf`;
@@ -28,8 +28,8 @@ async function TeacherApproveR01(props:any) {
   const { width, height } = firstPage.getSize();
 
   firstPage.drawText(props.advisorComments, {
-    x: 60,
-    y: height - 497,
+    x: 52,
+    y: height - 579,
     size: 14,
     font: THSarabunFont,
     color: rgb(0, 0, 1),
@@ -44,21 +44,21 @@ async function TeacherApproveR01(props:any) {
 
 
   firstPage.drawText(fullname, {
-    x: 128,
-    y: height - 540,
+    x: 145,
+    y: height - 610,
     size: 14,
     font: THSarabunFont,
     color: rgb(0, 0, 1),
   });
 
 
-  firstPage.drawText(pfullname, {
-    x: 105,
-    y: height - 561,
-    size: 14,
-    font: THSarabunFont,
-    color: rgb(0, 0, 1),
-  });
+  // firstPage.drawText(pfullname, {
+  //   x: 105,
+  //   y: height - 561,
+  //   size: 14,
+  //   font: THSarabunFont,
+  //   color: rgb(0, 0, 1),
+  // });
 
  
   const formattedDate = props.advisorDate;
@@ -68,8 +68,8 @@ async function TeacherApproveR01(props:any) {
     [dayPart, monthPart, yearPart] = formattedDate.split(" ");
     // Draw day part
     firstPage.drawText(dayPart, {
-      x: 115,
-      y: height - 576,
+      x: 130,
+      y: height - 626,
       size: 14,
       font: THSarabunFont,
       color: rgb(0, 0, 1),
@@ -77,8 +77,8 @@ async function TeacherApproveR01(props:any) {
 
     // Draw month part
     firstPage.drawText(monthPart, {
-      x: 144, // Adjust the x-coordinate as needed
-      y: height - 576,
+      x: 150, // Adjust the x-coordinate as needed
+      y: height - 626,
       size: 14,
       font: THSarabunFont,
       color: rgb(0, 0, 1),
@@ -86,8 +86,8 @@ async function TeacherApproveR01(props:any) {
 
     // Draw era part
     firstPage.drawText(yearPart, {
-      x: 207, // Adjust the x-coordinate as needed
-      y: height - 576,
+      x: 225, // Adjust the x-coordinate as needed
+      y: height - 626,
       size: 14,
       font: THSarabunFont,
       color: rgb(0, 0, 1),
@@ -126,4 +126,4 @@ async function TeacherApproveR01(props:any) {
   
 }
 
-export { TeacherApproveR01 };
+export { TeacherApproveR11 };

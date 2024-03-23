@@ -1,8 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CreatR11 } from "./print/creater11";
 import ConfirmModal from "@/components/modal/requestconfirm/page";
+import dayjs from "dayjs";
+import "dayjs/locale/th";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+dayjs.extend(buddhistEra);
+dayjs.locale("th");
+import { useRouter } from 'next/navigation'
+
+
 
 export default function R11() {
   const [date, setDate] = useState("");
@@ -32,6 +40,12 @@ export default function R11() {
 
   const [formValid, setFormValid] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setLoading] = useState(true);
+  const [roomData, setRoomData] = useState<any>(null);
+  const [userData, setUserData] = useState<any>(null);
+
+  const id = "621721100411";
+  const router = useRouter()
 
   const validateForm = () => {
     // Perform validation for each input field
@@ -61,6 +75,60 @@ export default function R11() {
 
     return isValid;
   };
+
+
+  useEffect(() => {
+    userDataFetch();
+    roomFetch();
+  }, []);
+
+  const userDataFetch = async () => {
+    try {
+      const res = await fetch(`/api/dbuser/${id}`);
+      const data = await res.json();
+      setUserData(data.users);
+      if (data.users) {
+        setStudentID(data?.users?.userId || "");
+        setPrefix(data?.users?.prefix || "");
+        setFirstName(data?.users?.name || "");
+        setLastName(data?.users?.lname || "");
+        setFaculty(data?.users?.faculty || "");
+        setMajor(data?.users?.major || "");
+        console.log(data.users);
+      } else {
+        console.log("error set Userdata");
+        alert("ไม่สามารถโหลดข้อมูลผู้ใช้งานได้");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+      alert("ไม่สามารถโหลดข้อมูลผู้ใช้งานได้");
+    }
+  };
+
+  const roomFetch = async () => {
+    try {
+      const res = await fetch(`/api/dbroom/findroomforstudent/${id}`);
+      const data2 = await res.json();
+      if (data2) {
+        setRoomData(data2);
+
+        console.log(data2);
+
+        // await refreshData();
+
+        if (data2.rooms.length === 0) {
+          alert("คุณยังไม่มีห้องเรียนกรุณาสมัครเข้าห้องเรียน");
+        }
+      } else {
+        console.log("error set Rooms data");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  };
+  
 
   const handleSubmit = () => {
     if (validateForm()) {
@@ -107,9 +175,50 @@ export default function R11() {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     // If the user confirms, call modifyPdf from PrintR01
+
+    if (!roomData || roomData.length === 0) {
+      alert("คุณยังไม่มีห้องเรียนกรุณาสมัครเข้าห้องเรียน");
+      console.log("คุณยังไม่มีห้องเรียนกรุณาสมัครเข้าห้องเรียน");
+      return;
+    }
+    const formattedDate = dayjs(date).format("DD MMMM BBBB");
+    let dayPart, monthPart, yearPart;
+
+    const response = await fetch("/api/dbdocs", {
+      method: "POST",
+      body: JSON.stringify({
+        date: formattedDate,
+        docType: "R.11 คำร้องขอลงทะเบียนเรียนเทียบรายวิชา",
+        status: "นักศึกษายื่นคำร้อง",
+        studentId: studentID,
+        studentPrefix: prefix,
+        studentName: firstName,
+        studentLastName: lastName,
+        major: major,
+        roomId: roomData?.rooms[0]?.roomId,
+        advisorId: roomData?.rooms[0]?.advisorId,
+        advisorPrefix: roomData?.rooms[0]?.advisorPrefix,
+        advisorName: roomData?.rooms[0]?.advisorName,
+        advisorLastName: roomData?.rooms[0]?.advisorLastName
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+     // ดึงข้อมูลที่สร้างเอกสารมาจาก response
+     const createdData = await response.json();
+
+     // เก็บค่าของเอกสารที่สร้างขึ้นมาใหม่ลงในตัวแปร createdDocs
+     const createdDocs = createdData.newDoc.documentsId;
+
+
+
     const formDataForPrintR11 = {
+      createdDocs: createdDocs,
+
       date: date,
 
       toWhom: toWhom,
@@ -142,10 +251,12 @@ export default function R11() {
     };
 
     // Call modifyPdf from PrintR01 with the form data
-    CreatR11(formDataForPrintR11);
+    await CreatR11(formDataForPrintR11);
 
     // Close the confirmation modal
     setIsModalOpen(false);
+    // router.push('/history');
+
   };
 
   const handleCancel = () => {
