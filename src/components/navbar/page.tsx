@@ -131,7 +131,7 @@ export default function Navbar() {
                 </div>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                   <div className="text-white hidden md:block">
-                    Phuminan Ananthuk
+                    ชื่อ นามสกุล
                   </div>
                   {/* <button
                     type="button"
@@ -168,29 +168,17 @@ export default function Navbar() {
                         <Menu.Item>
                           {({ active }) => (
                             <a
-                              href="#"
+                              href="/uploadsign"
                               className={classNames(
                                 active ? "bg-gray-100" : "",
                                 "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
-                              Your Profile
+                              อัพโหลดลายเซ็น
                             </a>
                           )}
                         </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
-                              )}
-                            >
-                              Settings
-                            </a>
-                          )}
-                        </Menu.Item>
+                        
                         <Menu.Item>
                           {({ active }) => (
                             <a
