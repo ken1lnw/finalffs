@@ -248,6 +248,7 @@ export default function R11() {
       structureSection: structureSection,
 
       professor: professor,
+      signPath: userData.signPath
     };
 
     // Call modifyPdf from PrintR01 with the form data

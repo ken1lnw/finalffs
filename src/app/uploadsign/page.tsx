@@ -151,6 +151,11 @@ export default function UploadSign() {
                   อัพโหลด
                 </button>
               </div>
+
+              <p>
+              รูปภาพที่อัพโหลดต้องมีพื้นหลังโปร่งแสง
+              </p>
+              
             </>
           ) : (
             <>
@@ -179,7 +184,12 @@ export default function UploadSign() {
                 >
                   อัพโหลด
                 </button>
+               
               </div>
+
+              <p>
+              รูปภาพที่อัพโหลดต้องมีพื้นหลังโปร่งแสง
+              </p>
             </>
           )
         ) : (

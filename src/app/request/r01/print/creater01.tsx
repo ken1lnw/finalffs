@@ -245,6 +245,33 @@ async function CreatR01(props:any) {
       color: rgb(0, 0, 1),
     });
   }
+  // const jpgUrl = `/sign/${props.signPath}`
+  // const jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer())
+  
+  // const jpgImage = await pdfDoc.embedJpg(jpgImageBytes)
+  // const jpgDims = jpgImage.scale(0.5)
+    
+  // firstPage.drawImage(jpgImage, {
+  //   x: 150,
+  //   y: height - 541,
+  //   width: 50,
+  //   height: 20,
+  // })
+
+  // firstPage.drawImage(jpgImage, {
+  //   x: 150,
+  //   y: height - 690,
+  //   width: 50,
+  //   height: 20,
+  // })
+
+  // firstPage.drawImage(jpgImage, {
+  //   x: 408,
+  //   y: height - 692,
+  //   width: 50,
+  //   height: 20,
+  // })
+
 
   // Additional modifications...
 
@@ -261,6 +288,7 @@ async function CreatR01(props:any) {
     });
 
     console.log("File uploaded successfully");
+
     alert("สร้างไฟล์คำร้องสำเร็จ")
   } catch (error) {
     alert("สร้างไฟล์คำร้องไม่สำเร็จ")
@@ -271,7 +299,7 @@ async function CreatR01(props:any) {
 
   const pdfBlobUrl = URL.createObjectURL(pdfBlob);
 
-  // window.open(pdfBlobUrl, "_blank");
+  window.open(pdfBlobUrl, "_blank");
   
 }
 

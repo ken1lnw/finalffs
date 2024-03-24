@@ -344,6 +344,35 @@ async function CreatR11(props: any) {
     color: rgb(0, 0, 1),
   });
 
+
+  // const jpgUrl = `/sign/${props.signPath}`
+  // const jpgImageBytes = await fetch(jpgUrl).then((res) => res.arrayBuffer())
+  
+  // const jpgImage = await pdfDoc.embedJpg(jpgImageBytes)
+  // const jpgDims = jpgImage.scale(0.5)
+    
+  // firstPage.drawImage(jpgImage, {
+  //   x: 161,
+  //   y: height - 610,
+  //   width: 50,
+  //   height: 20,
+  // })
+
+  // firstPage.drawImage(jpgImage, {
+  //   x: 161,
+  //   y: height - 721,
+  //   width: 50,
+  //   height: 20,
+  // })
+
+  // firstPage.drawImage(jpgImage, {
+  //   x: 435,
+  //   y: height - 722,
+  //   width: 50,
+  //   height: 20,
+  // })
+
+
   // Additional modifications...
 
   const pdfBytes = await pdfDoc.save();

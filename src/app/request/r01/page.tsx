@@ -42,6 +42,8 @@ export default function R01() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [roomData, setRoomData] = useState<any>(null);
+  const [userData, setUserData] = useState<any>(null);
+
 
   const id = "621721100411";
 
@@ -66,7 +68,7 @@ export default function R01() {
     try {
       const res = await fetch(`/api/dbuser/${id}`);
       const data = await res.json();
-      setRoomData(data.users);
+      setUserData(data.users);
       if (data.users) {
         setStudentID(data?.users?.userId || "");
         setPrefix(data?.users?.prefix || "");
@@ -231,6 +233,7 @@ export default function R01() {
       intention: intention,
       contactNumber: contactNumber,
       email: email,
+      signPath: userData.signPath,
     };
 
     // Call modifyPdf from PrintR01 with the form data
