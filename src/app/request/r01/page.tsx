@@ -12,6 +12,9 @@ import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 dayjs.locale("th");
 
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation";
+
 interface UserData {
   userId: string;
   prefix: string;
@@ -24,6 +27,18 @@ interface UserData {
 }
 
 export default function R01() {
+
+  const { data: session, status }:any = useSession()
+
+  if (status === "unauthenticated") {
+    redirect('/')
+  }
+
+  if (status === "authenticated" && session?.user?.role !== "student") {
+    redirect('/')
+  }
+
+
   const [date, setDate] = useState("");
   const [subject, setSubject] = useState("");
   const [toWhom, setToWhom] = useState("");
@@ -45,7 +60,7 @@ export default function R01() {
   const [userData, setUserData] = useState<any>(null);
 
 
-  const id = "621721100411";
+  const id = session?.user?.id;
 
   const [data, setData] = useState<UserData | null>({
     userId: "",
@@ -62,7 +77,7 @@ export default function R01() {
   useEffect(() => {
     userDataFetch();
     roomFetch();
-  }, []);
+  }, [session]);
 
   const userDataFetch = async () => {
     try {

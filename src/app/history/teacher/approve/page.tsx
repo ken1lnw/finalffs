@@ -40,7 +40,7 @@ export default function TeacherApprove(props: any) {
   };
 
   useEffect(() => {
-    console.log(docData);
+    console.log(teacherData);
   }, []);
 
   const majorFetch = async () => {
@@ -103,6 +103,7 @@ export default function TeacherApprove(props: any) {
 
       const formDataForPrintR01 = {
         DocsId: docData.documentsId,
+        signPath: teacherData.signPath,
         advisorDate: formattedDate,
         advisorId: teacherData.userId,
         advisorPrefix: teacherData.prefix,
@@ -131,7 +132,7 @@ export default function TeacherApprove(props: any) {
     } catch (error) {
       alert("ไม่สามารถบันทึกข้อมูลเอกสารลงบนฐานข้อมูลได้");
       resetStates();
-      console.log("Error while Editing Doc Data");
+      console.log("Error while Editing Doc Data", error);
     }
   };
 

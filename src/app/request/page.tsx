@@ -3,9 +3,22 @@ import React, { useEffect, useState } from "react";
 
 import R01 from "./r01/page";
 import R11 from "./r11/page";
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation";
 export default function History() {
-  const id = "621721100411";
-  const [status, setStatus] = useState("");
+  const { data: session, status }:any = useSession()
+
+  if (status === "unauthenticated") {
+    redirect('/')
+  }
+
+  if (status === "authenticated" && session?.user?.role !== "student") {
+    redirect('/')
+  }
+
+
+  const id = session?.user?.id;
+  const [roomstatus, setStatus] = useState("");
   const [data, setData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
   const [roomData, setRoomData] = useState<any>(null);
@@ -77,7 +90,7 @@ export default function History() {
     <>
       <div className="container mx-auto pt-4">
         {userData?.users ? (
-          status === "ยังไม่มีห้องเรียน" ? (
+          roomstatus === "ยังไม่มีห้องเรียน" ? (
             "ยังไม่มีห้องเรียน กรุณาสมัครเข้าห้องเรียน"
           ) : (
             <>

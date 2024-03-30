@@ -4,13 +4,26 @@ import DeleteButton from "./deletebutton/page";
 import DetailButton from "./detailbutton/page";
 import EditButton from "./editbutton/page";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation";
 // import PrintButton from "./printbutton/page";
 
 import { useState, useEffect } from "react";
 import StudentEditButton from "./studenteditbutton/page";
 
 export default function ManageMajor() {
+
+  const { data: session, status }:any = useSession()
+
+  if (status === "unauthenticated") {
+    redirect('/')
+  }
+
+  if (status === "authenticated" && session?.user?.admin === false) {
+    redirect('/')
+  }
+
+  
   const [data, setData] = useState<any>(null);
   const [userdata, setUserData] = useState<any>(null);
   const [isLoading, setLoading] = useState(true);

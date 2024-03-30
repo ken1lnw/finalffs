@@ -2,10 +2,25 @@
 import React, { useEffect, useState } from 'react';
 import RoomTable from './roomtable/page';
 import Registed from './registed/page';
-
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation";
 
 export default function RoomRegis() {
-    const [status, setStatus] = useState("");
+
+  
+  const { data: session, status }:any = useSession()
+
+  if (status === "unauthenticated") {
+    redirect('/')
+  }
+
+  if (status === "authenticated" && session?.user?.role !== 'student') {
+    redirect('/')
+  }
+  const id = session?.user?.id;
+
+
+    const [status2, setStatus] = useState("");
 
     const [data, setData] = useState<any>(null);
     const [userData, setUserData] = useState<any>(null);
@@ -14,7 +29,7 @@ export default function RoomRegis() {
 
     const [isLoading, setLoading] = useState(true);
 
-    const id = "621721100411";
+    // const id = "621721100411";
 
     const userDataFetch = () => {
       fetch(`/api/dbuser/${id}`)
@@ -86,7 +101,7 @@ export default function RoomRegis() {
         <>
           <div className="container mx-auto pt-4">
             {userData?.users ? (
-              status === "ยังไม่มีห้องเรียน" ? 
+              status2 === "ยังไม่มีห้องเรียน" ? 
                 (roomData && roomData.find((item:any) => item.status === "รอการอนุมัติ" && item.requesterId === id) ? "รอการอนุมัติคำขอสมัครเข้าห้องเรียน " + roomData.find((item:any) => item.status === "รอการอนุมัติ" && item.requesterId === id).roomId : <RoomTable userData={userData} refreshData={refreshData} />) 
                 : "มีห้องเรียนแล้ว"
             ) : (

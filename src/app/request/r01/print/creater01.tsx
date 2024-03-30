@@ -299,7 +299,7 @@ async function CreatR01(props:any) {
 
   const pdfBlobUrl = URL.createObjectURL(pdfBlob);
 
-  window.open(pdfBlobUrl, "_blank");
+  // window.open(pdfBlobUrl, "_blank");
   
 }
 

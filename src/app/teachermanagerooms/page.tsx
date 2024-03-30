@@ -10,10 +10,21 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useState, useEffect } from "react";
 import StudentEditButton from "./studenteditbutton/page";
 import RoomRequestTable from "./roomrequesttable/page";
-
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation";
 export default function ManageRooms() {
 
-  const id = "61221645656";
+  
+  const { data: session, status }:any = useSession()
+
+  if (status === "unauthenticated") {
+    redirect('/')
+  }
+
+  if (status === "authenticated" && session?.user?.role !== 'teacher') {
+    redirect('/')
+  }
+  const id = session?.user?.id;
 
   const [roomData, setRoomData] = useState<any>(null);
 

@@ -5,27 +5,79 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useSession, signIn, signOut } from "next-auth/react"
 
-const navigation = [
-  { name: "หน้าแรก", href: "/", current: false },
-  { name: "ยื่นคำร้อง", href: "/request", current: false },
-  { name: "ประวัติ", href: "/history", current: false },
-  { name: "แอดมิน", href: "", current: false, subItems: [
-    { name: "จัดการคำร้อง", href: "/managedocs", current: false },
-    { name: "จัดการผู้ใช้งาน", href: "/manageusers", current: false },
-    { name: "จัดการห้องเรียน", href: "/managerooms", current: false },
-    { name: "จัดการสาขา", href: "/managemajors", current: false }
-  ]},
-  { name: "จัดการห้องเรียน(อาจารย์)", href: "/teachermanagerooms", current: false },
-  { name: "สมัครเข้าห้องเรียน", href: "/roomregis", current: false },
-];
+interface NavigationItem {
+  name: string;
+  href: string;
+  current: boolean;
+  subItems?: {
+    name: string;
+    href: string;
+    current: boolean;
+  }[];
+}
+
+// const navigation = [
+//   { name: "หน้าแรก", href: "/", current: false },
+//   { name: "ยื่นคำร้อง", href: "/request", current: false },
+//   { name: "ประวัติ", href: "/history", current: false },
+//   { name: "แอดมิน", href: "", current: false, subItems: [
+//     { name: "จัดการคำร้อง", href: "/managedocs", current: false },
+//     { name: "จัดการผู้ใช้งาน", href: "/manageusers", current: false },
+//     { name: "จัดการห้องเรียน", href: "/managerooms", current: false },
+//     { name: "จัดการสาขา", href: "/managemajors", current: false }
+//   ]},
+//   { name: "จัดการห้องเรียน(อาจารย์)", href: "/teachermanagerooms", current: false },
+//   { name: "สมัครเข้าห้องเรียน", href: "/roomregis", current: false },
+// ];
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function Navbar() {
+  const { data: session }:any = useSession()
   const pathname = usePathname();
+
+  let navigation: NavigationItem[] = [
+    { name: "หน้าแรก", href: "/", current: false },
+  ];
+
+
+  if(session){
+    console.log(session);
+    if(session.user.role === 'student'){
+      navigation.push(
+        { name: "ยื่นคำร้อง", href: "/request", current: false },
+        { name: "ประวัติ", href: "/history", current: false },
+        { name: "สมัครเข้าห้องเรียน", href: "/roomregis", current: false },
+      )
+    } else if(session.user.role === 'teacher'){
+      navigation.push(
+        { name: "ประวัติ", href: "/history", current: false },
+        { name: "จัดการห้องเรียน(อาจารย์)", href: "/teachermanagerooms", current: false },
+      )
+    }
+    else if(session.user.role === 'officer'){
+      navigation.push(
+        { name: "ประวัติ", href: "/history", current: false },
+      )
+    }
+    if(session.user.admin){
+      navigation.push(
+        { name: "แอดมิน", href: "", current: false, subItems: [
+          { name: "จัดการคำร้อง", href: "/managedocs", current: false },
+          { name: "จัดการผู้ใช้งาน", href: "/manageusers", current: false },
+          { name: "จัดการห้องเรียน", href: "/managerooms", current: false },
+          { name: "จัดการสาขา", href: "/managemajors", current: false }
+        ]}
+      )
+    }
+  }
+
+
+
 
   const [currentPage, setCurrentPage] = useState(() => {
     // ให้เริ่มต้นค่าเป็น pathname ปัจจุบัน
@@ -36,6 +88,10 @@ export default function Navbar() {
   const handleNavigationClick = (name: string) => {
     setCurrentPage(name);
   };
+  
+//   if(session){
+// console.log(session.user);
+//   }
 
   return (
     <>
@@ -129,9 +185,10 @@ export default function Navbar() {
                     </div>
                   </div>
                 </div>
+                { session ?(
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                   <div className="text-white hidden md:block">
-                    ชื่อ นามสกุล
+                    <p>{session?.user?.name} {session?.user?.lname}</p>
                   </div>
                   {/* <button
                     type="button"
@@ -165,6 +222,22 @@ export default function Navbar() {
                       leaveTo="transform opacity-0 scale-95"
                     >
                       <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        
+                      <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="/profile"
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700"
+                              )}
+                            >
+                              ข้อมูลส่วนตัว
+                            </a>
+                          )}
+                        </Menu.Item>
+                        
+                        
                         <Menu.Item>
                           {({ active }) => (
                             <a
@@ -182,13 +255,14 @@ export default function Navbar() {
                         <Menu.Item>
                           {({ active }) => (
                             <a
-                              href="#"
+                              // href="/api/auth/signout"
+                              onClick={() => signOut({ callbackUrl: '/', redirect:true })}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
                                 "block px-4 py-2 text-sm text-gray-700"
                               )}
                             >
-                              Sign out
+                              ออกจากระบบ
                             </a>
                           )}
                         </Menu.Item>
@@ -196,6 +270,28 @@ export default function Navbar() {
                     </Transition>
                   </Menu>
                 </div>
+                ) : 
+                
+                <>
+                
+                <a
+
+        href={'/signin'}
+        // onClick={() => signIn('Credentials', {callbackUrl: "/history"})}
+
+        className={classNames(
+          currentPage === "เข้าสู่ระบบ"
+            ? "bg-gray-900 text-white"
+            : "text-gray-300 hover:bg-gray-700 hover:text-white",
+          "rounded-md px-3 py-2 text-sm font-medium"
+        )}
+      >
+        เข้าสู่ระบบ
+      </a>
+
+
+                </>
+                }
               </div>
             </div>
 
@@ -220,7 +316,13 @@ export default function Navbar() {
                 </Disclosure.Button>
                 <Disclosure.Panel>
                   <div className="space-y-1">
-                    {item.subItems.map((subItem) => (
+
+                  {item.subItems ? (
+  // ถ้า subItems มีค่า
+  // ให้แสดงเนื้อหาของ subItems
+  <>
+  
+  {item.subItems.map((subItem) => (
                       <Link
                         key={subItem.name}
                         href={subItem.href}
@@ -233,6 +335,17 @@ export default function Navbar() {
                         - {subItem.name}
                       </Link>
                     ))}
+  
+  </>
+  
+) : <></>
+  // ถ้า subItems เป็น undefined
+  // ให้ทำอะไรก็ตามที่คุณต้องการ
+}
+
+
+
+                   
                   </div>
                 </Disclosure.Panel>
               </>

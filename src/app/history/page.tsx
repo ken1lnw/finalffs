@@ -8,8 +8,16 @@ import { useState, useEffect } from "react";
 import TeacherApprove from "./teacher/approve/page";
 import HeadDepartmentApprove from "./headdep/approve/page";
 import OfficerApprove from "./officer/approve/page";
-
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation";
 export default function History() {
+
+  const { data: session, status }:any = useSession()
+
+  if (status === "unauthenticated") {
+    redirect('/')
+  }
+
   const [data, setData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
   const [majorData, setMajorData] = useState<any>(null);
@@ -24,7 +32,7 @@ export default function History() {
   const totalItems = data ? data.docs.length : 0; // จำนวนรายการทั้งหมด
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const id = "621731100111";
+  const id = session?.user?.id;
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -103,8 +111,11 @@ export default function History() {
 
   // Call refreshData in useEffect
   useEffect(() => {
-    userid();
-  }, []);
+    if(session){
+      userid();
+
+    }
+  }, [session]);
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {

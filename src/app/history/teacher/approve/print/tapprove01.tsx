@@ -42,6 +42,42 @@ async function TeacherApproveR01(props:any) {
   const fullname = `${name} ${lname}`;
   const pfullname = `${prefix} ${fullname}`;
 
+  const signPath = props.signPath;
+
+
+if(signPath && signPath !== "" || signPath !== null)
+{
+ const pngUrl = `/sign/${signPath}`
+  const pngImageBytes = await fetch(pngUrl).then((res) => res.arrayBuffer())
+  
+  const pngImage = await pdfDoc.embedPng(pngImageBytes)
+  // const jpgDims = pngImage.scale(0.5)
+    
+  firstPage.drawImage(pngImage, {
+    x: 150,
+    y: height - 541,
+    width: 50,
+    height: 20,
+  })
+
+  // firstPage.drawImage(pngImage, {
+  //   x: 150,
+  //   y: height - 690,
+  //   width: 50,
+  //   height: 20,
+  // })
+
+  // firstPage.drawImage(jpgImage, {
+  //   x: 408,
+  //   y: height - 692,
+  //   width: 50,
+  //   height: 20,
+  // })
+
+}
+
+else{
+
 
   firstPage.drawText(fullname, {
     x: 128,
@@ -50,6 +86,9 @@ async function TeacherApproveR01(props:any) {
     font: THSarabunFont,
     color: rgb(0, 0, 1),
   });
+
+}
+  
 
 
   firstPage.drawText(pfullname, {

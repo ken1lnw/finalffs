@@ -123,6 +123,7 @@ export default function HeadDepartmentApprove(props: any) {
 
       const formDataForPrintR01 = {
         DocsId: docData.documentsId,
+        signPath: teacherData.signPath,
         headDepartmentDate: formattedDate,
         headDepartmentId: teacherData.userId,
         headDepartmentPrefix:teacherData.prefix,
@@ -157,7 +158,7 @@ export default function HeadDepartmentApprove(props: any) {
     } catch (error) {
         alert("ไม่สามารถบันทึกข้อมูลเอกสารลงบนฐานข้อมูลได้")
         resetStates();
-      console.log("Error while Editing Doc Data");
+      console.log("Error while Editing Doc Data",error);
     }
 
 

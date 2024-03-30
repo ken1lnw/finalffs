@@ -128,7 +128,7 @@ export default function DetailButton(props: any) {
                             <p className="py-2 col-span-12 md:col-span-9">
                               {userData?.admin.toString()}
                             </p>
-
+{/* 
                             <p className="py-2 col-span-12 md:col-span-3 md:text-right">
                               ห้องเรียน :
                             </p>
@@ -143,7 +143,7 @@ export default function DetailButton(props: any) {
                                 <p className="py-2 col-span-12 md:col-span-9">
                                   ไม่มี
                                 </p>
-                              )}
+                              )} */}
                      
 
 

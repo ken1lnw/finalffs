@@ -41,15 +41,61 @@ async function HeadDepApproveR11(props:any) {
 
   const fullname = `${name} ${lname}`;
   const pfullname = `${prefix} ${fullname}`;
+  const signPath = props.signPath;
 
 
-  firstPage.drawText(fullname, {
-    x: 139,
-    y: height - 721,
-    size: 14,
-    font: THSarabunFont,
-    color: rgb(0, 0, 1),
-  });
+  if(signPath && signPath !== "" || signPath !== null)
+  {
+   const pngUrl = `/sign/${signPath}`
+    const pngImageBytes = await fetch(pngUrl).then((res) => res.arrayBuffer())
+    
+    const pngImage = await pdfDoc.embedPng(pngImageBytes)
+    // const jpgDims = pngImage.scale(0.5)
+      
+    firstPage.drawImage(pngImage, {
+      x: 161,
+      y: height - 610,
+      width: 50,
+      height: 20,
+    })
+  
+    // firstPage.drawImage(pngImage, {
+    //   x: 161,
+    //   y: height - 721,
+    //   width: 50,
+    //   height: 20,
+    // })
+  
+    // firstPage.drawImage(pngImage, {
+    //   x: 435,
+    //   y: height - 722,
+    //   width: 50,
+    //   height: 20,
+    // })
+  
+  }
+  
+  else{
+  
+  
+    firstPage.drawText(fullname, {
+      x: 139,
+      y: height - 721,
+      size: 14,
+      font: THSarabunFont,
+      color: rgb(0, 0, 1),
+    });
+  
+  }
+  
+
+  // firstPage.drawText(fullname, {
+  //   x: 139,
+  //   y: height - 721,
+  //   size: 14,
+  //   font: THSarabunFont,
+  //   color: rgb(0, 0, 1),
+  // });
 
 
   // firstPage.drawText(pfullname, {

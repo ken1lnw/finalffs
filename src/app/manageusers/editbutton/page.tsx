@@ -232,7 +232,7 @@ export default function EditButton(props: any) {
                               </select>
                             </p>
 
-                            <p className="py-2 col-span-12 md:col-span-3 md:text-right">
+                            {/* <p className="py-2 col-span-12 md:col-span-3 md:text-right">
                               ห้องเรียน :
                             </p>
 
@@ -245,7 +245,7 @@ export default function EditButton(props: any) {
                               <p className="py-2 col-span-12 md:col-span-9">
                                 ไม่มี
                               </p>
-                            )}
+                            )} */}
                           </div>
                         </div>
                       </div>

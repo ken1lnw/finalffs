@@ -7,8 +7,22 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 // import PrintButton from "./printbutton/page";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation";
 
 export default function History() {
+
+  const { data: session, status }:any = useSession()
+
+  if (status === "unauthenticated") {
+    redirect('/')
+  }
+
+  if (status === "authenticated" && session?.user?.admin === false) {
+    redirect('/')
+  }
+
+  
   const [data, setData] = useState<any>(null);
   const [isLoading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string>("");

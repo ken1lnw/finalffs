@@ -1,9 +1,21 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation";
+
 
 export default function UploadSign() {
-  const [status, setStatus] = useState("");
+  
+
+  const { data: session, status }:any = useSession()
+console.log(session)
+  if (status === "unauthenticated") {
+    redirect('/')
+  }
+  // const [status, setStatus] = useState("");
+  console.log(session)
+  const id = session?.user?.id;
 
   const [data, setData] = useState<any>(null);
   const [userData, setUserData] = useState<any>(null);
@@ -12,10 +24,11 @@ export default function UploadSign() {
   const [imageKey, setImageKey] = useState(Date.now());
 
   const [isLoading, setLoading] = useState(true);
+  
 
-  const id = "621721100411";
 
-  const userDataFetch = () => {
+
+  const userDataFetch =  async () => {
     fetch(`/api/dbuser/${id}`)
       .then((res) => res.json())
       .then((data) => {
@@ -23,7 +36,7 @@ export default function UploadSign() {
         if (data) {
           console.log(data);
           setUserData(data);
-          setImage(data.users.signPath);
+          setImage(data?.users?.signPath);
         } else {
           console.log("error fetch user data");
         }
@@ -34,10 +47,16 @@ export default function UploadSign() {
 
   const refreshData = () => {};
 
+  // useEffect(() => {
+  //   // refreshData();
+  //   userDataFetch();
+  // }, []);
+
   useEffect(() => {
-    // refreshData();
-    userDataFetch();
-  }, []);
+    if (session) {
+      userDataFetch();
+    }
+  }, [session]);
 
   const fileInput = useRef<any>(null);
 
@@ -139,7 +158,8 @@ export default function UploadSign() {
                   ref={fileInput}
                   className="border border-black rounded-md w-full md:w-60"
                   type="file"
-                  accept="image/png, image/jpeg"
+                  // accept="image/png, image/jpeg"
+                  accept="image/png"
                 />
 
                 <button
@@ -153,7 +173,7 @@ export default function UploadSign() {
               </div>
 
               <p>
-              รูปภาพที่อัพโหลดต้องมีพื้นหลังโปร่งแสง
+              รูปภาพที่อัพโหลดต้องเป็นไฟล์ .png เท่านั้น
               </p>
               
             </>
@@ -173,7 +193,7 @@ export default function UploadSign() {
                   ref={fileInput}
                   className="border border-black rounded-md w-full md:w-60"
                   type="file"
-                  accept="image/png, image/jpeg"
+                  accept="image/png"
                 />
 
                 <button
@@ -188,7 +208,7 @@ export default function UploadSign() {
               </div>
 
               <p>
-              รูปภาพที่อัพโหลดต้องมีพื้นหลังโปร่งแสง
+              รูปภาพที่อัพโหลดต้องเป็นไฟล์ .png เท่านั้น
               </p>
             </>
           )
