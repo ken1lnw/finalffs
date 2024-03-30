@@ -103,10 +103,10 @@ export default function UploadSign() {
                 <p className="py-2 md:ml-2">{userData?.users?.lname}</p>
               </div>
 
-              <div className="flex flex-row">
+              {/* <div className="flex flex-row">
                 <p className="py-2 font-bold ">คณะ :</p>
                 <p className="py-2 md:ml-2">{userData?.users?.faculty}</p>
-              </div>
+              </div> */}
 
               <div className="flex flex-row">
                 <p className="py-2 font-bold ">สาขาวิชา :</p>
